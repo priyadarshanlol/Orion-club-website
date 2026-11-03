@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Club Members (Points, 3-Flags, Stars, Duty Hours)
+    match /club_members/{memberId} {
+      allow read, write: if true;
+    }
+
+    // Flagship Events & RSVP & Media Gallery
+    match /events/{eventId} {
+      allow read, write: if true;
+    }
+
+    // 5 Wings Information
+    match /wings/{wingId} {
+      allow read, write: if true;
+    }
+
+    // Executive & Wing Team Hierarchy Roster
+    match /team/{teamId} {
+      allow read, write: if true;
+    }
+
+    // Student Candidates (for autocomplete search)
+    match /student_candidates/{candidateId} {
+      allow read, write: if true;
+    }
+
+    // Audition Slots
+    match /audition_slots/{slotId} {
+      allow read, write: if true;
+    }
+    
+    // Recruitment Applications
+    match /recruitment_applications/{appId} {
+      allow read, write: if true;
+    }
+
+    // Campus Notice Ticker
+    match /notices/{noticeId} {
+      allow read, write: if true;
+    }
+
+    // User Profiles
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Site Settings and Meta
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

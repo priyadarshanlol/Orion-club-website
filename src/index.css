@@ -1,0 +1,329 @@
+@import "tailwindcss";
+
+/*
+ * ORION — "Earned, not favoured."
+ * Monochrome constellation theme. The Tailwind palettes the components use are
+ * remapped here, so every existing amber/cyan/slate class turns into starlight
+ * silver, steel and deep-space black without touching component logic.
+ */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Montserrat", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Bodoni Moda", "Didot", "Times New Roman", serif;
+
+  /* deep space neutrals (was slate) */
+  --color-slate-50: #f7f8fa;
+  --color-slate-100: #eceef2;
+  --color-slate-200: #d6d9e0;
+  --color-slate-300: #b4b9c4;
+  --color-slate-400: #8c929e;
+  --color-slate-500: #666c78;
+  --color-slate-600: #484d57;
+  --color-slate-700: #30343c;
+  --color-slate-800: #1d2026;
+  --color-slate-900: #111317;
+  --color-slate-950: #07080a;
+
+  /* primary accent: starlight silver (was amber) */
+  --color-amber-50: #ffffff;
+  --color-amber-100: #fcfcfd;
+  --color-amber-200: #f7f8fa;
+  --color-amber-300: #f0f2f6;
+  --color-amber-400: #e6e9ef;
+  --color-amber-500: #c8cdd6;
+  --color-amber-600: #9da3af;
+  --color-amber-700: #737985;
+  --color-amber-800: #4b505a;
+  --color-amber-900: #2d3037;
+  --color-amber-950: #17191d;
+  --color-yellow-400: #e6e9ef;
+  --color-orange-400: #d9dde5;
+  --color-orange-500: #b9bfca;
+
+  /* secondary accent: cold steel blue (was cyan) */
+  --color-cyan-50: #f3f6fb;
+  --color-cyan-100: #e3eaf5;
+  --color-cyan-200: #cbd7ea;
+  --color-cyan-300: #b0c0dc;
+  --color-cyan-400: #95a9cc;
+  --color-cyan-500: #7c92ba;
+  --color-cyan-600: #63789f;
+  --color-cyan-700: #4c5c7d;
+  --color-cyan-800: #37425a;
+  --color-cyan-900: #232a3a;
+  --color-cyan-950: #131824;
+  --color-sky-400: #95a9cc;
+  --color-sky-500: #7c92ba;
+  --color-blue-400: #95a9cc;
+  --color-blue-500: #7c92ba;
+
+  /* nebula lavender-grey (was purple / violet / indigo / pink) */
+  --color-purple-300: #cdcbe0;
+  --color-purple-400: #b2afcc;
+  --color-purple-500: #9692b8;
+  --color-purple-600: #78749a;
+  --color-violet-400: #b2afcc;
+  --color-violet-500: #9692b8;
+  --color-indigo-400: #a9b1cf;
+  --color-indigo-500: #8c95ba;
+  --color-pink-300: #ddd3dc;
+  --color-pink-400: #c7b9c6;
+  --color-pink-500: #ab9cab;
+  --color-fuchsia-400: #c7b9c6;
+}
+
+@layer base {
+  :root {
+    --bg-dark: #050608;
+    --bg-surface: #0c0d10;
+    --bg-card: #101216;
+    --accent-gold: #e6e9ef;
+    --accent-gold-light: #ffffff;
+    --accent-cyan: #95a9cc;
+    --accent-cyan-light: #b0c0dc;
+    --accent-purple: #9692b8;
+    --text-primary: #eceef2;
+    --text-secondary: #8c929e;
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* section titles get the poster's bold geometric sans */
+  h1, h2, h3 {
+    letter-spacing: -0.01em;
+  }
+  section h2 {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+  }
+
+  ::selection {
+    background: rgba(255, 255, 255, 0.85);
+    color: #050608;
+  }
+}
+
+/* ---------- Background layers ---------- */
+.orion-space {
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 0%, rgba(205, 214, 235, 0.10), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 85% 100%, rgba(150, 160, 200, 0.06), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 10% 60%, rgba(255, 255, 255, 0.035), transparent 70%),
+    linear-gradient(180deg, #06070a 0%, #040507 50%, #020203 100%);
+}
+
+.orion-vignette {
+  background: radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+.orion-grain {
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Fallback starfield when WebGL is unavailable */
+.orion-static-stars {
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+    radial-gradient(1px 1px at 30% 70%, #dfe6ff, transparent),
+    radial-gradient(1.5px 1.5px at 55% 35%, #fff, transparent),
+    radial-gradient(1px 1px at 75% 80%, #fff, transparent),
+    radial-gradient(1px 1px at 90% 15%, #dfe6ff, transparent),
+    radial-gradient(1.5px 1.5px at 65% 55%, #fff, transparent);
+  background-size: 320px 320px;
+}
+
+/* ---------- Surfaces ---------- */
+.glass-panel {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.01)),
+    rgba(9, 10, 13, 0.62);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 30px 80px -40px rgba(0, 0, 0, 0.9);
+}
+
+.glass-card,
+.glass-card-cyan {
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.0) 45%),
+    rgba(10, 11, 14, 0.58);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.glass-card:hover,
+.glass-card-cyan:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 24px 60px -24px rgba(200, 210, 235, 0.22);
+}
+
+.gold-glow {
+  text-shadow: 0 0 24px rgba(255, 255, 255, 0.35), 0 0 60px rgba(190, 205, 240, 0.18);
+}
+
+.cyan-glow {
+  text-shadow: 0 0 24px rgba(149, 169, 204, 0.45), 0 0 50px rgba(149, 169, 204, 0.2);
+}
+
+.border-glow-gold {
+  box-shadow: 0 0 18px rgba(255, 255, 255, 0.16);
+}
+
+.border-glow-cyan {
+  box-shadow: 0 0 18px rgba(149, 169, 204, 0.22);
+}
+
+/* Metallic starlight text */
+.text-starlight {
+  background: linear-gradient(180deg, #ffffff 0%, #e9ecf2 45%, #9ea5b3 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-shimmer {
+  background: linear-gradient(110deg, #9ea5b3 20%, #ffffff 40%, #ffffff 50%, #9ea5b3 70%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 7s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 100% 0; }
+  50% { background-position: 0% 0; }
+}
+
+/* Thin rule with a four-point star in the middle, like the poster */
+.star-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+.star-rule::before,
+.star-rule::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45));
+}
+.star-rule::after {
+  background: linear-gradient(270deg, transparent, rgba(255, 255, 255, 0.45));
+}
+
+/* Section eyebrow pills become hairline, tracked caps */
+section [class*="rounded-full"][class*="uppercase"][class*="tracking-wider"] {
+  letter-spacing: 0.28em;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050608;
+}
+::-webkit-scrollbar-thumb {
+  background: #23262d;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c8cdd6;
+}
+
+@keyframes floatParticle {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1.5deg); }
+}
+
+.animate-float {
+  animation: floatParticle 7s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.85; }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+@keyframes orbitSpin {
+  to { transform: rotate(360deg); }
+}
+.animate-orbit {
+  animation: orbitSpin 80s linear infinite;
+}
+.animate-orbit-reverse {
+  animation: orbitSpin 120s linear infinite reverse;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+.animate-twinkle {
+  animation: twinkle 3.6s ease-in-out infinite;
+}
+
+@keyframes drawLine {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes scrollCue {
+  0% { transform: translateY(-100%); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateY(200%); opacity: 0; }
+}
+.animate-scroll-cue {
+  animation: scrollCue 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-orbit,
+  .animate-orbit-reverse,
+  .animate-twinkle,
+  .animate-float,
+  .animate-scroll-cue,
+  .text-shimmer {
+    animation: none;
+  }
+}
+
+/* Section titles: bold sans with a high-contrast serif accent, like "ORION / CORE" on the poster */
+section h2 > span.gold-glow {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #ffffff;
+  padding: 0 0.08em;
+}
