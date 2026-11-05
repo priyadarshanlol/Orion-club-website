@@ -16,16 +16,26 @@ payments run in a labelled test mode.
    (or run `firebase deploy --only firestore:rules`).
 4. **Web app keys**: Project settings → Your apps → Add web app. Copy the config values
    into the `VITE_FIREBASE_*` variables.
-5. **Microsoft sign-in**: Authentication → Sign-in method → Microsoft. It needs an
-   Azure app registration (client id and secret). REVA's IT team may need to create
-   it in the REVA Microsoft tenant. Add your Vercel domain under
-   Authentication → Settings → Authorised domains.
+5. **Sign-in**: Authentication → Sign-in method → enable **Email/Password**. Students sign up
+   with their @reva.edu.in email and must click the verification link before they can sign in.
+   Add your Vercel domain under Authentication → Settings → Authorised domains.
+   (Optional, later) **Microsoft**: needs an Azure app registration (client id and secret),
+   which REVA's IT team may need to create in the REVA Microsoft tenant.
 6. **Service account for the API**: Project settings → Service accounts → Generate new
-   private key. Base64-encode the file (`base64 -w0 key.json`) and put the result in
-   `FIREBASE_SERVICE_ACCOUNT_BASE64`. Never commit the JSON file.
-7. **First admin**: sign in once on the live site, then in Firestore open
+   private key. Base64-encode the file (`base64 -w0 key.json`) and put the result straight into
+   Vercel as `FIREBASE_SERVICE_ACCOUNT_BASE64`. Never commit the JSON file or paste it in chat.
+7. **First admin**: sign up on the live site and verify your email. Then in Firestore open
    `users/<your uid>` and set `isAdmin: true` and `position: "President"` (or your role).
    From then on, admins promote others from the committee console.
+8. **Starting data**: signed in as that admin, open Committee console → Advanced data tools →
+   **Push to Firestore**. This loads the five wings, events, team and notices into the database.
+   It does not create any user accounts.
+
+## Testing locally against the Firebase emulators
+
+`npx firebase-tools emulators:start --only auth,firestore --project demo-orion`, then run the site
+with `VITE_USE_FIREBASE_EMULATORS=true` and any non-empty `VITE_FIREBASE_API_KEY`, and the API with
+`FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 GCLOUD_PROJECT=demo-orion`. Never set these in Vercel.
 
 ## 2. Razorpay
 

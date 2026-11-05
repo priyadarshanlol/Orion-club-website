@@ -12,8 +12,24 @@ import {
 import { 
   signInWithPopup, 
   signOut as firebaseSignOut, 
-  onAuthStateChanged
+  onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  updateProfile
 } from 'firebase/auth';
+
+// Friendly text for Firebase Auth error codes.
+const authMessage = (err) => {
+  const code = err?.code || '';
+  if (code.includes('email-already-in-use')) return 'An account with this email already exists. Sign in instead.';
+  if (code.includes('invalid-credential') || code.includes('wrong-password') || code.includes('user-not-found')) return 'Incorrect email or password.';
+  if (code.includes('too-many-requests')) return 'Too many attempts. Wait a few minutes and try again.';
+  if (code.includes('weak-password')) return 'That password is too weak.';
+  if (code.includes('network')) return 'Network error. Check your connection and try again.';
+  return 'Something went wrong. Please try again.';
+};
 
 const AuthContext = createContext();
 
@@ -85,6 +101,7 @@ export const formatUserRecord = (baseUser, remote = {}) => {
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => {
+    if (isLiveFirebaseConfigured) return null;
     const savedUser = localStorage.getItem('orion_simulated_user');
     if (!savedUser) return null;
     try {
@@ -139,7 +156,17 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (isLiveFirebaseConfigured && auth && typeof onAuthStateChanged === 'function') {
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          setCurrentUser(null);
+          localStorage.removeItem('orion_simulated_user');
+          return;
+        }
         if (user) {
+          const isPasswordAccount = user.providerData.some((p) => p.providerId === 'password');
+          if (isPasswordAccount && !user.emailVerified) {
+            setCurrentUser(null);
+            return;
+          }
           if (user.email && user.email.toLowerCase().endsWith('@reva.edu.in')) {
             let userData = {
               uid: user.uid,
@@ -321,6 +348,52 @@ export const AuthProvider = ({ children }) => {
       return { success: false, error: passValidation.errorMessage };
     }
 
+    if (isLiveFirebaseConfigured && auth) {
+      setLoading(true);
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
+        const uid = cred.user.uid;
+        await updateProfile(cred.user, { displayName: name.trim() });
+        const profile = {
+          uid,
+          displayName: name.trim(),
+          email: cleanEmail,
+          photoURL: avatar && !avatar.startsWith('data:') ? avatar : `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanEmail)}`,
+          isRevaAccount: true,
+          isAdmin: false,
+          isMember: false,
+          isVisitor: true,
+          position: 'Visitor',
+          srn: srn.trim().toUpperCase(),
+          branch: branch || '',
+          year: year || '',
+          wing: wing || '',
+          phone: phone.trim(),
+          authProvider: 'email-password',
+          createdAt: new Date().toISOString()
+        };
+        await setDoc(doc(db, 'users', uid), profile);
+        await setDoc(doc(db, 'student_candidates', uid), {
+          id: uid, name: profile.displayName, email: cleanEmail, srn: profile.srn, branch: profile.branch,
+          year: profile.year, phone: profile.phone, avatar: profile.photoURL, preferredWing: profile.wing,
+          roleSuggested: 'Club Candidate', registeredAt: profile.createdAt
+        });
+        await sendEmailVerification(cred.user);
+        await firebaseSignOut(auth);
+        return {
+          success: true,
+          pendingVerification: true,
+          message: `Account created. We sent a verification link to ${cleanEmail}. Open it, then sign in.`
+        };
+      } catch (e) {
+        const err = authMessage(e);
+        setAuthError(err);
+        return { success: false, error: err };
+      } finally {
+        setLoading(false);
+      }
+    }
+
     const cleanUid = `reva_srn_${srn.trim().toUpperCase().replace(/[^A-Z0-9]/g, '')}`;
 
     // All new registered users commonly default to VISITOR!
@@ -404,6 +477,28 @@ export const AuthProvider = ({ children }) => {
       const err = 'Please enter your password.';
       setAuthError(err);
       return { success: false, error: err };
+    }
+
+    if (isLiveFirebaseConfigured && auth) {
+      setLoading(true);
+      try {
+        const cred = await signInWithEmailAndPassword(auth, cleanEmail, password);
+        if (!cred.user.emailVerified) {
+          await sendEmailVerification(cred.user).catch(() => {});
+          await firebaseSignOut(auth);
+          const err = `Verify your email first. We sent a new link to ${cleanEmail}.`;
+          setAuthError(err);
+          return { success: false, error: err };
+        }
+        // onAuthStateChanged loads the profile and roles from Firestore.
+        return { success: true };
+      } catch (e) {
+        const err = authMessage(e);
+        setAuthError(err);
+        return { success: false, error: err };
+      } finally {
+        setLoading(false);
+      }
     }
 
     const cleanUid = `reva_${cleanEmail.replace(/[^a-zA-Z0-9]/g, '_')}`;
@@ -533,9 +628,16 @@ export const AuthProvider = ({ children }) => {
       return { success: false, error: err };
     }
 
+    if (isLiveFirebaseConfigured && auth) {
+      try {
+        await sendPasswordResetEmail(auth, cleanEmail);
+      } catch (e) {
+        if (!(e?.code || '').includes('user-not-found')) return { success: false, error: authMessage(e) };
+      }
+    }
     return { 
       success: true, 
-      message: `Password reset link sent to ${cleanEmail}. Please check your REVA Microsoft student inbox.` 
+      message: `If an account exists for ${cleanEmail}, a password reset link is on its way. Check your REVA inbox.` 
     };
   };
 

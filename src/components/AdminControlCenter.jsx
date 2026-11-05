@@ -50,7 +50,9 @@ export default function AdminControlCenter({ isOpen, onClose }) {
   } = useData();
 
   const [passcode, setPasscode] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // The committee console already checks the signed-in role, and Firestore rules
+  // enforce it on every write, so no extra passcode is needed here.
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [authError, setAuthError] = useState('');
   const [activeTab, setActiveTab] = useState('points-flags'); // 'points-flags' | 'firestore' | 'members' | 'wings' | 'notices' | 'events' | 'json'
   const [isSyncingFirestore, setIsSyncingFirestore] = useState(false);
@@ -86,7 +88,7 @@ export default function AdminControlCenter({ isOpen, onClose }) {
       setIsAuthenticated(true);
       setAuthError('');
     } else {
-      setAuthError('Invalid Admin Security Passcode. Default passcode is: orion2026');
+      setAuthError('Invalid passcode.');
     }
   };
 

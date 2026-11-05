@@ -149,7 +149,7 @@ export default function MicrosoftAuthModal({ isOpen, onClose }) {
 
     const res = await signInWithEmailPassword(email, password);
     if (res.success) {
-      showToast('Signed in successfully with Microsoft SSO!', 'success');
+      showToast('Signed in.', 'success');
       onClose();
     } else {
       setLocalError(res.error || 'Authentication failed. Please check credentials.');
@@ -201,7 +201,10 @@ export default function MicrosoftAuthModal({ isOpen, onClose }) {
 
     const res = await signUpWithEmailPassword(signupPayload);
 
-    if (res.success) {
+    if (res.success && res.pendingVerification) {
+      showToast(res.message, 'success');
+      onClose();
+    } else if (res.success) {
       showToast(`Welcome to Club ORION, ${fullName.trim()}! Account created in Student Visitor mode.`, 'success');
       onClose();
     } else {

@@ -7,7 +7,10 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     function signedIn() { return request.auth != null; }
-    function reva() { return signedIn() && request.auth.token.email.matches('.*@reva[.]edu[.]in$'); }
+    function reva() {
+      return signedIn() && request.auth.token.email.matches('.*@reva[.]edu[.]in$')
+        && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider != 'password');
+    }
     function profile() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
     function committee() {
       return signedIn()
@@ -43,7 +46,9 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || committee());
       // first sign-in: a plain visitor record, no roles
-      allow create: if request.auth.uid == uid && reva()
+      // (email need not be verified yet: sign-up writes this before the link is clicked)
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.auth.token.email.matches('.*@reva[.]edu[.]in$')
         && request.resource.data.get('isAdmin', false) == false
         && request.resource.data.get('isLeadership', false) == false
         && request.resource.data.get('position', 'Visitor') == 'Visitor';
@@ -60,7 +65,12 @@ service cloud.firestore {
       allow create: if reva() && request.auth.uid == uid && request.resource.data.get('status', 'Submitted') == 'Submitted';
       allow update, delete: if committee();
     }
-    match /student_candidates/{id} { allow read, write: if committee(); }
+    match /student_candidates/{id} {
+      // a new student adds their own candidate record at sign-up; committee does the rest
+      allow create: if signedIn() && request.auth.uid == id
+        && request.auth.token.email.matches('.*@reva[.]edu[.]in$');
+      allow read, update, delete: if committee();
+    }
 
     // ---------- operations ----------
     match /discipline_cases/{id} { allow read, write: if committee(); }

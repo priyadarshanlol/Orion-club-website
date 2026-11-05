@@ -7,6 +7,12 @@ let db = null;
 
 export function adminDb() {
   if (db) return db;
+  // Local testing against the Firestore emulator (never set in production).
+  if (process.env.FIRESTORE_EMULATOR_HOST && process.env.GCLOUD_PROJECT) {
+    if (!getApps().length) initializeApp({ projectId: process.env.GCLOUD_PROJECT });
+    db = getFirestore();
+    return db;
+  }
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
   if (!raw) throw new HttpError(503, 'The server is not connected to Firebase yet.');
   const serviceAccount = JSON.parse(Buffer.from(raw, 'base64').toString('utf8'));

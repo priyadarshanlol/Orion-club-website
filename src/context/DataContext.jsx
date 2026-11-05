@@ -13,8 +13,10 @@ import {
   INITIAL_VENUES,
   INITIAL_DISCIPLINE_CASES
 } from '../lib/content';
+import { onAuthStateChanged } from 'firebase/auth';
 import { 
   db, 
+  auth,
   isLiveFirebaseConfigured, 
   collection, 
   doc, 
@@ -232,32 +234,8 @@ export const DataProvider = ({ children }) => {
       for (const s of INITIAL_AUDITION_SLOTS) {
         await setDoc(doc(db, 'audition_slots', s.id), s, { merge: true });
       }
-      // 6. Student Candidates
-      for (const c of INITIAL_STUDENT_CANDIDATES) {
-        await setDoc(doc(db, 'student_candidates', c.id), c, { merge: true });
-      }
       // 7. Notices
       await setDoc(doc(db, 'notices', 'current'), { items: NOTICE_TICKER_ITEMS, updatedAt: serverTimestamp() }, { merge: true });
-
-      // 8. User Accounts & Positions
-      for (const m of INITIAL_CLUB_MEMBERS) {
-        await setDoc(doc(db, 'users', m.id), {
-          uid: m.id,
-          displayName: m.name,
-          email: m.email,
-          srn: m.srn,
-          branch: m.branch,
-          wing: m.wing,
-          position: m.role || 'Club Member',
-          role: m.role || 'Club Member',
-          phone: m.phone || '',
-          photoURL: m.avatar,
-          isMember: true,
-          isVisitor: false,
-          isAdmin: (m.role || '').toLowerCase().includes('director') || (m.role || '').toLowerCase().includes('president'),
-          createdAt: new Date().toISOString()
-        }, { merge: true });
-      }
 
       setFirestoreStatus('live');
       console.log('✅ Successfully seeded all collections (including users & positions) into Cloud Firestore.');
@@ -294,9 +272,6 @@ export const DataProvider = ({ children }) => {
       for (const s of auditionSlots) {
         await setDoc(doc(db, 'audition_slots', s.id), s, { merge: true });
       }
-      for (const c of studentCandidates) {
-        await setDoc(doc(db, 'student_candidates', c.id), c, { merge: true });
-      }
       await setDoc(doc(db, 'notices', 'current'), { items: noticeTicker, updatedAt: serverTimestamp() }, { merge: true });
 
       setFirestoreStatus('live');
@@ -313,6 +288,14 @@ export const DataProvider = ({ children }) => {
       return { success: false, error: err.message };
     }
   };
+
+  // Who is signed in to Firebase. Private collections (candidates, registrations,
+  // inbox) only open up after sign-in, so the listeners re-attach when this changes.
+  const [authUid, setAuthUid] = useState(null);
+  useEffect(() => {
+    if (!isLiveFirebaseConfigured || !auth) return;
+    return onAuthStateChanged(auth, (u) => setAuthUid(u?.uid || null));
+  }, []);
 
   // Real-time Cloud Firestore synchronization listeners
   useEffect(() => {
@@ -331,8 +314,9 @@ export const DataProvider = ({ children }) => {
           localStorage.setItem('orion_club_members', JSON.stringify(list));
           setFirestoreStatus('live');
         } else {
-          // If empty in Firestore, auto-seed with 5 wings data!
-          seedInitialFirestoreData();
+          // Empty database: keep showing the built-in starting data. A committee
+          // member loads it into Firestore from Committee console → Advanced → Push.
+          setFirestoreStatus('live');
         }
       }, (err) => {
         console.warn('club_members snapshot error:', err.message);
@@ -438,7 +422,7 @@ export const DataProvider = ({ children }) => {
       if (unsubApps) unsubApps();
       if (unsubNotices) unsubNotices();
     };
-  }, []);
+  }, [authUid]);
 
   // State setters with localStorage & Firestore sync
   const setWings = (newWings) => {
