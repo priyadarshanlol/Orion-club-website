@@ -1,43 +1,27 @@
 import React, { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { CalendarDays, Clock, MapPin, Trophy, Briefcase, Users, Ticket, Coffee, Plus, X, ShieldCheck, CreditCard, ArrowDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { CalendarDays, Clock, MapPin, Trophy, Briefcase, Users, Ticket, Coffee, ArrowDown } from 'lucide-react';
 import { useData } from '../context/DataContext';
-import { useAuth } from '../context/AuthContext';
 import { Instagram } from '../components/BrandIcons';
-import { PageShell, Pill, EmptyState, inputClass, labelClass, primaryButton, ghostButton } from '../components/ui';
-import { RegistrationLookup, RegistrationReceipt, paymentNote } from './EventPages';
-import { payForRegistration, paymentsAvailable } from '../lib/payments';
+import { PageShell, Pill, EmptyState, primaryButton, ghostButton } from '../components/ui';
+import { RegistrationLookup, RegistrationReceipt } from './EventPages';
+import AarambhForm, { WhatsAppJoin } from '../components/AarambhForm';
+import { HACKATHON_ID, FORM_INTRO } from '../lib/hackathonForm';
 
 /*
- * /hackathon: the Aarambh 2026 page. Every detail shown here comes from the
- * event record (src/lib/data.js → Firestore events/aarambh-2026), which matches
- * the official poster. Registration is per team; the person filling the form is
- * the team lead.
+ * /hackathon: the Aarambh 2026 page. Event details come from the event record
+ * (src/lib/data.js → Firestore events/aarambh-2026), matching the official
+ * poster; the registration questions come from src/lib/hackathonForm.js,
+ * matching the club's Google Form.
  */
-export const HACKATHON_ID = 'aarambh-2026';
-
-const blankMember = () => ({ name: '', email: '', srn: '' });
+export { HACKATHON_ID };
 
 export default function HackathonPage() {
-  const { events, eventSettingsFor, registerForEvent, markRegistrationPaid, registrations, showToast } = useData();
-  const { currentUser } = useAuth();
-  const [params] = useSearchParams();
+  const { events, eventSettingsFor, registrations } = useData();
   const event = events.find((e) => e.id === HACKATHON_ID);
   const settings = eventSettingsFor(HACKATHON_ID);
-  const team = settings.team || { min: 2, max: 3 };
-  const [form, setForm] = useState(() => ({
-    teamName: '',
-    name: currentUser?.displayName || '',
-    email: currentUser?.email || '',
-    phone: '',
-    srn: '',
-    school: '',
-    year: '',
-    members: Array.from({ length: Math.max(1, team.min - 1) }, blankMember),
-  }));
-  const [regId, setRegId] = useState(() => params.get('pay') || null);
+  const [registration, setRegistration] = useState(null);
   const [notice, setNotice] = useState('');
-  const [busy, setBusy] = useState(false);
 
   if (!event) {
     return (
@@ -50,49 +34,11 @@ export default function HackathonPage() {
   }
 
   const h = event.hackathon || {};
-  const registration = regId ? registrations.find((r) => r.id === regId) : null;
-  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
-  const setMember = (i, k) => (e) => setForm((f) => ({ ...f, members: f.members.map((m, j) => (j === i ? { ...m, [k]: e.target.value } : m)) }));
-  const addMember = () => setForm((f) => ({ ...f, members: [...f.members, blankMember()] }));
-  const removeMember = (i) => setForm((f) => ({ ...f, members: f.members.filter((_, j) => j !== i) }));
-  const canAdd = form.members.length + 1 < team.max;
-  const canRemove = form.members.length + 1 > team.min;
-
-  const pay = async (reg) => {
-    setBusy(true);
-    setNotice('');
-    try {
-      const result = await payForRegistration({ registration: reg, event });
-      markRegistrationPaid(reg.id, result);
-      showToast(result.mode === 'test' ? 'Test payment recorded. No money was charged.' : 'Payment verified. Your team is confirmed.', 'success');
-    } catch (err) {
-      setNotice(err.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const submit = async (e) => {
-    e.preventDefault();
-    setNotice('');
-    setBusy(true);
-    let res;
-    try {
-      res = await registerForEvent(HACKATHON_ID, form);
-    } finally {
-      setBusy(false);
-    }
-    if (!res.ok) {
-      if (res.reason === 'already') {
-        setRegId(res.registration.id);
-        setNotice('This email has already registered a team for Aarambh.');
-      } else {
-        setNotice(res.message || 'Registration is closed right now.');
-      }
-      return;
-    }
-    setRegId(res.registration.id);
-    if (res.registration.status === 'pending_payment' && paymentsAvailable) await pay(res.registration);
+  const shown = registration ? registrations.find((r) => r.id === registration.id) || registration : null;
+  const onRegistered = (reg, already) => {
+    setRegistration(reg);
+    setNotice(already ? 'This team lead email has already registered a team for Aarambh. Here is that registration.' : '');
+    document.getElementById('register')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const facts = [
@@ -146,74 +92,29 @@ export default function HackathonPage() {
       </section>
 
       {/* Registration */}
-      <section id="register" className="glass-panel rounded-[2rem] p-6 sm:p-10 grid lg:grid-cols-[1fr_1.5fr] gap-8 [&>*]:min-w-0 scroll-mt-28">
+      <section id="register" className="glass-panel rounded-[2rem] p-6 sm:p-10 grid lg:grid-cols-[1fr_2fr] gap-8 [&>*]:min-w-0 scroll-mt-28">
         <div className="space-y-4">
-          <h2 className="font-display font-bold text-white text-2xl sm:text-3xl">Register your <span className="heading-accent">team</span></h2>
-          <p className="text-sm text-slate-400 leading-relaxed">
-            One person registers the whole team as team lead. Teams have {team.min} to {team.max} members including the lead.
-            {settings.fee > 0 ? ` The fee is ₹${settings.fee} per team.` : ''}
-          </p>
+          <h2 className="font-display font-bold text-white text-2xl sm:text-3xl">Orion Aarambh Hackathon <span className="heading-accent">Registration</span> 2026</h2>
+          <p className="text-sm text-slate-400 leading-relaxed">{FORM_INTRO}</p>
           <div className="flex items-baseline gap-3">
             <span className="font-serif text-5xl text-white">{settings.fee > 0 ? `₹${settings.fee}` : 'Free'}</span>
             {settings.fee > 0 && <span className="text-xs uppercase tracking-[0.2em] text-slate-500">per team</span>}
           </div>
-          {settings.fee > 0 && (
-            <p className="flex items-start gap-2 text-[11px] text-slate-500"><ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0" />{paymentNote()}</p>
-          )}
+          <p className="text-[11px] text-slate-500">* Indicates required question</p>
         </div>
 
-        <div>
-          {registration ? (
-            <RegistrationReceipt registration={registration} onPay={() => pay(registration)} paying={busy} backTo="/hackathon" />
+        <div className="space-y-4">
+          {shown ? (
+            <>
+              <RegistrationReceipt registration={shown} backTo="/hackathon" />
+              <WhatsAppJoin />
+            </>
           ) : !event.isUpcoming || !settings.registrationOpen ? (
             <p className="text-sm text-slate-400">Registration is closed right now.</p>
           ) : (
-            <form onSubmit={submit} className="space-y-6">
-              <label className="block"><span className={labelClass}>Team name</span><input required maxLength={60} value={form.teamName} onChange={set('teamName')} className={inputClass} /></label>
-
-              <fieldset className="space-y-3">
-                <legend className="text-xs font-semibold text-white mb-1">Team lead (you)</legend>
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <label className="block"><span className={labelClass}>Full name</span><input required value={form.name} onChange={set('name')} className={inputClass} autoComplete="name" /></label>
-                  <label className="block"><span className={labelClass}>Email</span><input required type="email" value={form.email} onChange={set('email')} className={inputClass} autoComplete="email" /></label>
-                  <label className="block"><span className={labelClass}>Phone</span><input required type="tel" pattern="[0-9+ \-]{10,15}" value={form.phone} onChange={set('phone')} className={inputClass} autoComplete="tel" /></label>
-                  <label className="block"><span className={labelClass}>SRN</span><input value={form.srn} onChange={set('srn')} className={inputClass} placeholder="Optional" /></label>
-                  <label className="block"><span className={labelClass}>Year</span>
-                    <select value={form.year} onChange={set('year')} className={inputClass}>
-                      <option value="">Select</option>
-                      {['1st Year', '2nd Year', '3rd Year', '4th Year', 'Postgraduate', 'Other college'].map((y) => <option key={y}>{y}</option>)}
-                    </select>
-                  </label>
-                  <label className="block"><span className={labelClass}>School or college</span><input value={form.school} onChange={set('school')} className={inputClass} placeholder="e.g. School of CSE" /></label>
-                </div>
-              </fieldset>
-
-              {form.members.map((m, i) => (
-                <fieldset key={i} className="space-y-3 rounded-2xl border border-white/10 p-4">
-                  <div className="flex items-center justify-between">
-                    <legend className="text-xs font-semibold text-white">Member {i + 2}</legend>
-                    {canRemove && (
-                      <button type="button" onClick={() => removeMember(i)} className="text-slate-500 hover:text-white" aria-label={`Remove member ${i + 2}`}><X className="w-4 h-4" /></button>
-                    )}
-                  </div>
-                  <div className="grid sm:grid-cols-3 gap-3">
-                    <label className="block"><span className={labelClass}>Full name</span><input required value={m.name} onChange={setMember(i, 'name')} className={inputClass} /></label>
-                    <label className="block"><span className={labelClass}>Email</span><input required type="email" value={m.email} onChange={setMember(i, 'email')} className={inputClass} /></label>
-                    <label className="block"><span className={labelClass}>SRN</span><input value={m.srn} onChange={setMember(i, 'srn')} className={inputClass} placeholder="Optional" /></label>
-                  </div>
-                </fieldset>
-              ))}
-              {canAdd && (
-                <button type="button" onClick={addMember} className={`${ghostButton} !py-2`}><Plus className="w-4 h-4" /> Add member {form.members.length + 2}</button>
-              )}
-
-              <button disabled={busy} className={`${primaryButton} w-full`}>
-                {busy ? 'Registering…' : settings.fee > 0 && paymentsAvailable ? <><CreditCard className="w-4 h-4" /> Register and pay ₹{settings.fee}</> : 'Register team'}
-              </button>
-              <p className="text-[11px] text-slate-500">Each member must use a different email. You get a registration id to check your status any time.</p>
-            </form>
+            <AarambhForm fee={settings.fee} onRegistered={onRegistered} />
           )}
-          {notice && <p className="text-sm text-amber-200 mt-3">{notice}</p>}
+          {notice && <p className="text-sm text-amber-200">{notice}</p>}
         </div>
       </section>
 

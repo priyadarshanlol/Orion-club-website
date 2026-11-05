@@ -5,7 +5,7 @@ import { Pill, EmptyState, inputClass, labelClass, primaryButton, ghostButton } 
 import { STATUS_META } from './EventPages';
 
 const WINGS = ['Discipline Wing', 'Internal & External Wing', 'Cultural Wing', 'Technical Wing', 'Media & Marketing Wing'];
-const REG_STATUSES = ['confirmed', 'pending_payment', 'waitlisted', 'cancelled'];
+const REG_STATUSES = ['confirmed', 'verifying', 'pending_payment', 'waitlisted', 'cancelled'];
 
 const csvCell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
 
@@ -20,7 +20,8 @@ export function RegistrationsTab({ operator }) {
   const form = draft && draft.eventId === eventId ? draft : { eventId, fee: settings.fee, capacity: settings.capacity, registrationOpen: settings.registrationOpen };
   const regs = registrationsFor(eventId);
   const counts = useMemo(() => REG_STATUSES.reduce((acc, s) => ({ ...acc, [s]: regs.filter((r) => r.status === s).length }), {}), [regs]);
-  const collected = regs.filter((r) => r.paid).reduce((n, r) => n + (Number(r.amount) || 0), 0);
+  // Razorpay payments are marked paid by the server; UPI (UTR) payments count once the committee confirms them.
+  const collected = regs.filter((r) => r.paid || (r.status === 'confirmed' && r.payment?.utr)).reduce((n, r) => n + (Number(r.amount) || 0), 0);
 
   const save = (e) => {
     e.preventDefault();
@@ -29,9 +30,10 @@ export function RegistrationsTab({ operator }) {
   };
 
   const exportCsv = () => {
-    const head = ['Registration id', 'Team', 'Team size', 'Name (lead)', 'Email', 'Phone', 'SRN', 'School', 'Year', 'Member 2', 'Member 2 email', 'Member 2 SRN', 'Member 3', 'Member 3 email', 'Member 3 SRN', 'Status', 'Paid', 'Amount', 'Payment id', 'Registered at'];
-    const member = (r, i) => { const m = (r.members || [])[i] || {}; return [m.name, m.email, m.srn]; };
-    const rows = regs.map((r) => [r.id, r.teamName, r.teamSize, r.name, r.email, r.phone, r.srn, r.school, r.year, ...member(r, 0), ...member(r, 1), r.status, r.paid ? 'yes' : 'no', r.amount, r.payment?.paymentId || '', r.createdAt]);
+    const person = (label) => [`${label} name`, `${label} email`, `${label} contact`, `${label} SRN`, `${label} school`, `${label} semester`, `${label} branch`];
+    const head = ['Registration id', 'Team', 'Team size', ...person('Lead'), 'Year', ...person('Member 2'), ...person('Member 3'), '1st preference', '2nd preference', 'Status', 'Paid', 'Amount', 'UTR', 'Paid by', 'Razorpay payment id', 'Registered at'];
+    const member = (r, i) => { const m = (r.members || [])[i] || {}; return [m.name, m.email, m.phone, m.srn, m.school, m.sem, m.branch]; };
+    const rows = regs.map((r) => [r.id, r.teamName, r.teamSize, r.name, r.email, r.phone, r.srn, r.school, r.sem, r.branch, r.year, ...member(r, 0), ...member(r, 1), r.domains?.[0], r.domains?.[1], r.status, r.paid ? 'yes' : 'no', r.amount, r.payment?.utr || '', r.payment?.paidBy || '', r.payment?.paymentId || '', r.createdAt]);
     const blob = new Blob([[head, ...rows].map((row) => row.map(csvCell).join(',')).join('\n')], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -96,10 +98,12 @@ export function RegistrationsTab({ operator }) {
               {regs.map((r) => (
                 <tr key={r.id} className="border-t border-white/[0.05] align-top">
                   <td className="px-5 py-3"><div className="font-mono text-xs text-white">{r.id}</div><div className="text-[11px] text-slate-500">{r.createdAt?.slice(0, 16).replace('T', ' ')}</div></td>
-                  <td className="px-5 py-3">{r.teamName && <div className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Team {r.teamName} · {r.teamSize}</div>}<div className="text-white">{r.name}</div><div className="text-[11px] text-slate-500">{r.email} · {r.phone}{r.srn ? ` · ${r.srn}` : ''}</div>{r.members?.length > 0 && <div className="text-[11px] text-slate-500 mt-1">+ {r.members.map((m) => m.name).join(', ')}</div>}</td>
+                  <td className="px-5 py-3">{r.teamName && <div className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Team {r.teamName} · {r.teamSize}</div>}<div className="text-white">{r.name}</div><div className="text-[11px] text-slate-500">{r.email} · {r.phone}{r.srn ? ` · ${r.srn}` : ''}</div>{r.members?.length > 0 && <div className="text-[11px] text-slate-500 mt-1">+ {r.members.map((m) => m.name).join(', ')}</div>}{r.domains?.length > 0 && <div className="text-[10px] text-slate-500 mt-1">Domains: {r.domains.join(' · ')}</div>}</td>
                   <td className="px-5 py-3">
-                    {r.amount > 0 ? <Pill tone={r.paid ? 'good' : 'warn'}>{r.paid ? `Paid ₹${r.amount}` : `Due ₹${r.amount}`}</Pill> : <Pill>Free</Pill>}
+                    {r.amount > 0 ? <Pill tone={r.paid ? 'good' : 'warn'}>{r.paid ? `Paid ₹${r.amount}` : r.payment?.utr ? `UPI ₹${r.amount}` : `Due ₹${r.amount}`}</Pill> : <Pill>Free</Pill>}
                     {r.payment?.paymentId && <div className="font-mono text-[10px] text-slate-500 mt-1">{r.payment.paymentId}</div>}
+                    {r.payment?.utr && <div className="font-mono text-[11px] text-slate-200 mt-1">UTR {r.payment.utr}</div>}
+                    {r.payment?.paidBy && <div className="text-[10px] text-slate-500">by {r.payment.paidBy}</div>}
                   </td>
                   <td className="px-5 py-3">
                     <select value={r.status} onChange={(e) => setRegistrationStatus(r.id, e.target.value, operator)} className={`${inputClass} !py-1.5 !text-xs`}>

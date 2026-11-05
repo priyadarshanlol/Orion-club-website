@@ -18,6 +18,12 @@ export const STATUS_META = {
       ? 'Your seat is held until payment is complete.'
       : 'Your registration is saved. Online payment opens soon: the ORION team will contact you with how to pay the fee.',
   },
+  verifying: {
+    label: 'Verifying payment',
+    tone: 'warn',
+    icon: Hourglass,
+    text: 'Your registration and payment details are saved. It will be confirmed once the ORION team has verified your payment.',
+  },
   waitlisted: { label: 'Waitlisted', tone: 'steel', icon: Hourglass, text: 'The event is full. We will email you if a seat opens.' },
   cancelled: { label: 'Cancelled', tone: 'bad', icon: Hourglass, text: 'This registration was cancelled.' },
 };
@@ -295,7 +301,7 @@ export function RegistrationReceipt({ registration, onPay, paying, backTo = '/ev
       <div className="rounded-2xl border border-white/15 bg-black/30 p-5 space-y-3">
         <div className="flex items-center justify-between gap-3">
           <span className="flex items-center gap-2 text-white font-semibold"><Icon className="w-4 h-4" /> {meta.label}</span>
-          <Pill tone={meta.tone}>{registration.paid ? 'Paid' : registration.amount > 0 ? 'Unpaid' : 'Free'}</Pill>
+          <Pill tone={meta.tone}>{registration.paid ? 'Paid' : registration.status === 'verifying' ? 'Payment submitted' : registration.amount > 0 ? 'Unpaid' : 'Free'}</Pill>
         </div>
         <p className="text-sm text-slate-400">{meta.text}</p>
         <dl className="text-xs space-y-1.5">
@@ -305,6 +311,9 @@ export function RegistrationReceipt({ registration, onPay, paying, backTo = '/ev
           )}
           <div className="flex justify-between gap-3"><dt className="text-slate-500">{registration.teamName ? 'Team lead' : 'Name'}</dt><dd className="text-slate-200">{registration.name}</dd></div>
           <div className="flex justify-between gap-3"><dt className="text-slate-500">Email</dt><dd className="text-slate-200 truncate">{registration.email}</dd></div>
+          {registration.payment?.utr && (
+            <div className="flex justify-between gap-3"><dt className="text-slate-500">UTR number</dt><dd className="font-mono text-slate-200 truncate">{registration.payment.utr}</dd></div>
+          )}
           {registration.payment?.paymentId && (
             <div className="flex justify-between gap-3"><dt className="text-slate-500">Payment</dt><dd className="font-mono text-slate-200 truncate">{registration.payment.paymentId}</dd></div>
           )}

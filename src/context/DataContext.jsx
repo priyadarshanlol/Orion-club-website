@@ -1171,7 +1171,11 @@ export const DataProvider = ({ children }) => {
       srn: (form.srn || '').trim().toUpperCase(),
       school: (form.school || '').trim(),
       year: form.year || '',
-      ...(settings.team ? {
+      ...(form.lead ? {
+        teamName: form.teamName, teamSize: form.teamSize, sem: form.lead.sem, branch: form.lead.branch, school: form.lead.school,
+        members: form.members, domains: [form.domain1, form.domain2],
+        payment: { method: 'upi', ...form.payment, submittedAt: new Date().toISOString() },
+      } : settings.team ? {
         teamName: (form.teamName || '').trim(),
         members: (form.members || []).filter(m => m.name || m.email).map(m => ({ name: m.name.trim(), email: m.email.trim().toLowerCase(), srn: (m.srn || '').trim().toUpperCase() })),
         teamSize: (form.members || []).filter(m => m.name || m.email).length + 1,
@@ -1179,7 +1183,7 @@ export const DataProvider = ({ children }) => {
       createdAt: new Date().toISOString(),
       amount: settings.fee,
       paid: false,
-      status: full ? 'waitlisted' : settings.fee > 0 ? 'pending_payment' : 'confirmed',
+      status: full ? 'waitlisted' : form.lead && settings.fee > 0 ? 'verifying' : settings.fee > 0 ? 'pending_payment' : 'confirmed',
     };
     setRegistrations(prev => {
       const next = [reg, ...prev];
