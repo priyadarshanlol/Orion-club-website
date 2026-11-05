@@ -22,6 +22,7 @@ export default postHandler(async (body) => {
     const event = eventSnap.data();
     const settings = { fee: 0, capacity: 0, registrationOpen: true, ...(event.registration || {}) };
     if (event.isUpcoming === false || !settings.registrationOpen) throw new HttpError(409, 'Registration for this event is closed.');
+    const team = teamFrom(body, settings.team, email);
 
     const existing = await tx.get(
       db.collection('registrations').where('eventId', '==', eventId).where('email', '==', email).limit(5)
@@ -45,6 +46,7 @@ export default postHandler(async (body) => {
       srn: clean(body.srn, 20).toUpperCase(),
       school: clean(body.school, 100),
       year: clean(body.year, 30),
+      ...(team || {}),
       amount: fee,
       paid: false,
       status: full ? 'waitlisted' : fee > 0 ? 'pending_payment' : 'confirmed',
@@ -56,6 +58,26 @@ export default postHandler(async (body) => {
   });
 });
 
+// Team events (settings.team = { min, max }): the person filling the form is
+// the team lead, plus (min - 1) to (max - 1) more members.
+function teamFrom(body, teamRule, leadEmail) {
+  if (!teamRule) return null;
+  const min = Math.max(1, Number(teamRule.min) || 1);
+  const max = Math.max(min, Number(teamRule.max) || min);
+  const teamName = clean(body.teamName, 60);
+  const raw = Array.isArray(body.members) ? body.members.slice(0, max) : [];
+  const members = raw
+    .map((m) => ({ name: clean(m?.name, 100), email: clean(m?.email, 120).toLowerCase(), srn: clean(m?.srn, 20).toUpperCase() }))
+    .filter((m) => m.name || m.email);
+  if (!teamName) throw new HttpError(400, 'Please enter a team name.');
+  if (members.some((m) => !m.name || !isEmail(m.email))) throw new HttpError(400, 'Every team member needs a name and a valid email.');
+  const emails = [leadEmail, ...members.map((m) => m.email)];
+  if (new Set(emails).size !== emails.length) throw new HttpError(400, 'Each team member must use a different email.');
+  const size = members.length + 1;
+  if (size < min || size > max) throw new HttpError(400, `Teams must have ${min} to ${max} members, including you.`);
+  return { teamName, members, teamSize: size };
+}
+
 // What the browser is allowed to see about a registration
 export const publicView = (r) => ({
   id: r.id,
@@ -64,6 +86,8 @@ export const publicView = (r) => ({
   name: r.name,
   email: r.email,
   phone: r.phone,
+  teamName: r.teamName,
+  teamSize: r.teamSize,
   amount: r.amount,
   paid: r.paid,
   status: r.status,

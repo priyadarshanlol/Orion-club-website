@@ -60,6 +60,7 @@ export default function Footer() {
               <li><Link to="/gallery" className="hover:text-amber-400 transition-colors">Media Gallery</Link></li>
               <li><Link to="/about" className="hover:text-amber-400 transition-colors">About ORION</Link></li>
               <li><Link to="/team" className="hover:text-amber-400 transition-colors">Meet ORION: directory</Link></li>
+              <li><Link to="/hackathon" className="hover:text-amber-400 transition-colors">Aarambh 2026 hackathon</Link></li>
               <li><Link to="/spotlight" className="hover:text-amber-400 transition-colors">Member Spotlight</Link></li>
               <li><Link to="/events" className="hover:text-amber-400 transition-colors">Upcoming events & registration</Link></li>
               <li><Link to="/recruitment" className="hover:text-amber-400 transition-colors">Recruitment 2026 Portal</Link></li>

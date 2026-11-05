@@ -17,7 +17,7 @@ const Section = ({ id, children }) => (
 export function EventCard({ event, compact = false }) {
   const { eventSettingsFor } = useData();
   const settings = eventSettingsFor(event.id);
-  const to = `/events/${event.id}`;
+  const to = event.pagePath || `/events/${event.id}`;
   return (
     <article className="glass-card rounded-3xl overflow-hidden flex flex-col group">
       <Link to={to} className="relative aspect-[16/9] overflow-hidden block" tabIndex={-1} aria-hidden="true">
@@ -148,7 +148,7 @@ export function LeadershipPreview() {
       </div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[president, ...directors].filter(Boolean).map((p, i) => (
-          <div key={p.name} className={`glass-card rounded-3xl p-5 flex items-center gap-4 ${i === 0 ? 'sm:col-span-2 lg:col-span-1 lg:row-span-2 lg:flex-col lg:text-center lg:justify-center' : ''}`}>
+          <div key={`${p.name}-${i}`} className={`glass-card rounded-3xl p-5 flex items-center gap-4 ${i === 0 ? 'sm:col-span-2 lg:col-span-1 lg:row-span-2 lg:flex-col lg:text-center lg:justify-center' : ''}`}>
             <img src={p.avatar} alt="" className={`${i === 0 ? 'w-16 h-16 lg:w-28 lg:h-28' : 'w-14 h-14'} rounded-full object-cover grayscale border border-white/20 shrink-0`} />
             <div className="min-w-0">
               <div className="text-[10px] tracking-[0.22em] uppercase text-slate-500">{i === 0 ? 'President' : p.wing}</div>

@@ -17,7 +17,7 @@ export const OFFICIAL_CHANNELS = [
     note: 'Collaborations, sponsorships and faculty endorsements',
     unconfirmed: true,
   },
-  { id: 'instagram', label: 'Instagram', handle: '', url: '', note: 'Event highlights and member stories' },
+  { id: 'instagram', label: 'Instagram', handle: '@orionreva', url: 'https://www.instagram.com/orionreva/', note: 'Event highlights and member stories' },
   { id: 'whatsapp', label: 'WhatsApp', handle: '', url: '', note: 'Announcements channel' },
   { id: 'youtube', label: 'YouTube', handle: '', url: '', note: 'Event films and aftermovies' },
 ];

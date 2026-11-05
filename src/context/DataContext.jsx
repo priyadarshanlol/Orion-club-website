@@ -38,7 +38,7 @@ export const useData = () => {
 
 // Bump when the shape or naming of the seed data changes, so browsers holding an
 // old copy in localStorage (for example the old wing names) start fresh.
-const DATA_VERSION = '3-official-wing-names';
+const DATA_VERSION = '4-aarambh-2026';
 try {
   if (localStorage.getItem('orion_data_version') !== DATA_VERSION) {
     Object.keys(localStorage)
@@ -1171,6 +1171,11 @@ export const DataProvider = ({ children }) => {
       srn: (form.srn || '').trim().toUpperCase(),
       school: (form.school || '').trim(),
       year: form.year || '',
+      ...(settings.team ? {
+        teamName: (form.teamName || '').trim(),
+        members: (form.members || []).filter(m => m.name || m.email).map(m => ({ name: m.name.trim(), email: m.email.trim().toLowerCase(), srn: (m.srn || '').trim().toUpperCase() })),
+        teamSize: (form.members || []).filter(m => m.name || m.email).length + 1,
+      } : {}),
       createdAt: new Date().toISOString(),
       amount: settings.fee,
       paid: false,

@@ -173,6 +173,35 @@ export const INITIAL_AUDITION_SLOTS = [
 
 export const INITIAL_EVENTS = [
   {
+    id: 'aarambh-2026',
+    title: 'Aarambh 2026: Innovate • Build • Create',
+    shortTitle: 'Aarambh 2026',
+    kind: 'hackathon',
+    pagePath: '/hackathon',
+    wing: 'ORION · School of CSE',
+    wingId: 'technical',
+    date: 'November 12, 2026',
+    time: '8:30 AM - 4:30 PM IST',
+    timestamp: '2026-11-12T08:30:00',
+    venue: 'Rangasthala, SVB Block, REVA University, Bengaluru',
+    description: 'Got ideas? We have got the platform. Bring your A-game to Aarambh 2026, a hackathon organised by ORION where creativity meets technology and ideas turn into innovation. Build something cool, collaborate with brilliant minds, showcase your skills and compete for exciting rewards.',
+    bannerUrl: '/events/aarambh-2026-poster.jpg',
+    isUpcoming: true,
+    isFinished: false,
+    tags: ['Hackathon', 'Flagship'],
+    registration: { registrationOpen: true, fee: 200, capacity: 0, team: { min: 2, max: 3 } },
+    hackathon: {
+      tagline: 'Innovate • Build • Create',
+      prizePool: 'Gadgets worth ₹20,000',
+      internships: 'Internship opportunities for the top 4 teams',
+      teamSize: '2–3 members',
+      fee: '₹200 per team',
+      perks: 'Refreshments will be provided',
+      partners: ['Pixdent Dental Clinics', 'BN Landscapes', 'MSW', 'Crave Bowls'],
+    },
+    media: { images: [], videos: [] }
+  },
+  {
     id: 'evt-1',
     title: 'ORION Recruitment & Auditions 2026',
     wing: 'Discipline Wing & Internal & External Wing',
@@ -184,8 +213,8 @@ export const INITIAL_EVENTS = [
     venueCoordinator: 'Deepak Raj (Internal & External Secretary)',
     description: 'The premier annual recruitment audition across 5 specialized wings. Candidate evaluation by Discipline Wing Directors and interactive wing panels.',
     bannerUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&auto=format&fit=crop&q=80',
-    isUpcoming: true,
-    isFinished: false,
+    isUpcoming: false,
+    isFinished: true,
     rsvpLink: '#recruitment',
     tags: ['Recruitment', 'Auditions', 'Flagship'],
     media: { images: [], videos: [] }
@@ -202,28 +231,10 @@ export const INITIAL_EVENTS = [
     venueCoordinator: 'Deepak Raj (Internal & External Secretary)',
     description: '24-hour inter-college extravaganza combining rapid prototyping, creative short-film sprints, and live cultural stage performances under the stars.',
     bannerUrl: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&auto=format&fit=crop&q=80',
-    isUpcoming: true,
-    isFinished: false,
+    isUpcoming: false,
+    isFinished: true,
     rsvpLink: '#events',
     tags: ['Fest', '24h Hackathon', 'Cultural Stage'],
-    media: { images: [], videos: [] }
-  },
-  {
-    id: 'evt-3',
-    title: 'Tarang 2026: State Cultural Fest & Dance Conclave',
-    wing: 'Cultural Wing',
-    wingId: 'cultural',
-    date: 'November 18, 2026',
-    time: '5:00 PM - 10:00 PM IST',
-    timestamp: '2026-11-18T17:00:00',
-    venue: 'REVA Central Auditorium & Grand Amphitheatre',
-    venueCoordinator: 'Deepak Raj (Internal & External Secretary)',
-    description: 'A grand spectacle of classical fusion, street dance battles, theatrical plays, and vocal harmony groups representing universities from across Karnataka.',
-    bannerUrl: 'https://images.unsplash.com/photo-1469488865564-c2de10f69f96?w=800&auto=format&fit=crop&q=80',
-    isUpcoming: true,
-    isFinished: false,
-    rsvpLink: '#events',
-    tags: ['Cultural', 'Music & Dance', 'State Conclave'],
     media: { images: [], videos: [] }
   },
   {
@@ -367,6 +378,7 @@ export const INITIAL_TEAM = [
 ];
 
 export const NOTICE_TICKER_ITEMS = [
+  '🚀 AARAMBH 2026 hackathon: 12 November, Rangasthala (SVB Block). Teams of 2–3, ₹200 per team. Register on the Hackathon page!',
   '🚨 RECRUITMENT 2026 IS LIVE! Sign in using REVA Microsoft SSO (@reva.edu.in).',
   '📅 Audition Slots filling fast for Day 1 & Day 2! Reserve your time window in the portal.',
   '✨ Explore our 5 Specialized Wings: Discipline Wing (Discipline), Internal & External Wing (Venues), Cultural Wing (Cultural), Technical Wing (Tech), and Media & Marketing!',

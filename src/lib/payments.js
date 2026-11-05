@@ -1,3 +1,4 @@
+import { isLiveFirebaseConfigured } from './firebase';
 /*
  * Razorpay checkout on the client.
  *
@@ -13,6 +14,11 @@
  */
 
 export const isLivePayments = Boolean(import.meta.env.VITE_RAZORPAY_KEY_ID);
+
+// The live site without a Razorpay key cannot take payments yet. Registrations
+// are still saved (status: payment pending) and the committee collects the fee
+// later; nothing is ever marked paid without a verified Razorpay payment.
+export const paymentsAvailable = isLivePayments || !isLiveFirebaseConfigured;
 
 let scriptPromise = null;
 const loadCheckout = () => {

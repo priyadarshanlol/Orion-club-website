@@ -147,7 +147,7 @@ export default function WingDetailPage() {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {tiers.flatMap(([label, list]) => list.map((p) => <PersonCard key={p.name} person={p} tier={label.split(' · ')[1]} onOpen={setPerson} />))}
+            {tiers.flatMap(([label, list]) => list.map((p, j) => <PersonCard key={`${label}-${p.name}-${j}`} person={p} tier={label.split(' · ')[1]} onOpen={setPerson} />))}
             {hierarchy.roster.map((m) => <PersonCard key={m.id} person={m} tier="Member" onOpen={setPerson} />)}
           </div>
         )}

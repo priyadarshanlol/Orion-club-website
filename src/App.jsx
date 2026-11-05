@@ -19,6 +19,7 @@ import CommitteeConsole from './pages/CommitteeConsole';
 import DisciplineConsole from './pages/DisciplineConsole';
 import DirectoryPage from './pages/DirectoryPage';
 import SpotlightPage from './pages/SpotlightPage';
+import HackathonPage from './pages/HackathonPage';
 import ConnectPage from './pages/ConnectPage';
 import { EventsListPage, EventDetailPage } from './pages/EventPages';
 import {
@@ -80,6 +81,8 @@ function Shell() {
             <Route path="/events" element={<EventsListPage />} />
             <Route path="/events/:eventId" element={<EventDetailPage />} />
             <Route path="/spotlight" element={<SpotlightPage />} />
+            <Route path="/hackathon" element={<HackathonPage />} />
+            <Route path="/aarambh" element={<HackathonPage />} />
             <Route path="/team" element={<DirectoryPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/recruitment" element={<RecruitmentPage />} />

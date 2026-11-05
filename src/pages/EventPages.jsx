@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, CalendarDays, Clock, MapPin, Ticket, Search, CreditCard, CheckCircle2, Hourglass, ShieldCheck } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { EventCard, Announcements } from '../components/HomeSections';
 import { PageHeader, PageShell, Pill, EmptyState, Tabs, inputClass, labelClass, primaryButton, ghostButton } from '../components/ui';
-import { payForRegistration, fetchRegistrationStatus, isLivePayments } from '../lib/payments';
+import { payForRegistration, fetchRegistrationStatus, isLivePayments, paymentsAvailable } from '../lib/payments';
 import { isLiveFirebaseConfigured } from '../lib/firebase';
 
 export const STATUS_META = {
   confirmed: { label: 'Confirmed', tone: 'good', icon: CheckCircle2, text: 'Your seat is confirmed. Bring this registration id to the venue.' },
-  pending_payment: { label: 'Payment pending', tone: 'warn', icon: CreditCard, text: 'Your seat is held until payment is complete.' },
+  pending_payment: {
+    label: 'Payment pending',
+    tone: 'warn',
+    icon: CreditCard,
+    text: paymentsAvailable
+      ? 'Your seat is held until payment is complete.'
+      : 'Your registration is saved. Online payment opens soon: the ORION team will contact you with how to pay the fee.',
+  },
   waitlisted: { label: 'Waitlisted', tone: 'steel', icon: Hourglass, text: 'The event is full. We will email you if a seat opens.' },
   cancelled: { label: 'Cancelled', tone: 'bad', icon: Hourglass, text: 'This registration was cancelled.' },
 };
@@ -78,7 +85,7 @@ export function RegistrationLookup() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Pill tone={meta.tone}>{meta.label}</Pill>
-                    {r.status === 'pending_payment' && ev && <Link to={`/events/${ev.id}?pay=${r.id}`} className="text-[11px] font-bold uppercase tracking-[0.16em] text-white hover:underline">Pay now</Link>}
+                    {r.status === 'pending_payment' && ev && paymentsAvailable && <Link to={`${ev.pagePath || `/events/${ev.id}`}?pay=${r.id}`} className="text-[11px] font-bold uppercase tracking-[0.16em] text-white hover:underline">Pay now</Link>}
                   </div>
                 </li>
               );
@@ -154,6 +161,8 @@ export function EventDetailPage() {
     );
   }
 
+  if (event.pagePath) return <Navigate to={event.pagePath} replace />;
+
   const settings = eventSettingsFor(event.id);
   const taken = registrationsFor(event.id).filter((r) => r.status === 'confirmed' || r.status === 'pending_payment').length;
   const seatsLeft = settings.capacity > 0 ? Math.max(0, settings.capacity - taken) : null;
@@ -188,7 +197,7 @@ export function EventDetailPage() {
       return;
     }
     setRegId(res.registration.id);
-    if (res.registration.status === 'pending_payment') await pay(res.registration);
+    if (res.registration.status === 'pending_payment' && paymentsAvailable) await pay(res.registration);
   };
 
   return (
@@ -255,14 +264,12 @@ export function EventDetailPage() {
               </div>
               <label className="block"><span className={labelClass}>School or college</span><input value={form.school} onChange={set('school')} className={inputClass} placeholder="e.g. School of C&IT" /></label>
               <button disabled={paying} className={`${primaryButton} w-full`}>
-                {settings.fee > 0 ? <><CreditCard className="w-4 h-4" /> Register and pay ₹{settings.fee}</> : 'Register'}
+                {settings.fee > 0 && paymentsAvailable ? <><CreditCard className="w-4 h-4" /> Register and pay ₹{settings.fee}</> : 'Register'}
               </button>
               {settings.fee > 0 && (
                 <p className="flex items-start gap-2 text-[11px] text-slate-500">
                   <ShieldCheck className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                  {isLivePayments
-                    ? 'Payments are processed by Razorpay. ORION never sees your card or UPI details.'
-                    : 'Preview copy: payment runs in test mode and no money is charged.'}
+                  {paymentNote()}
                 </p>
               )}
             </form>
@@ -274,7 +281,13 @@ export function EventDetailPage() {
   );
 }
 
-function RegistrationReceipt({ registration, onPay, paying }) {
+export function paymentNote() {
+  if (isLivePayments) return 'Payments are processed by Razorpay. ORION never sees your card or UPI details.';
+  if (!paymentsAvailable) return 'Online payment opens soon. Register now to hold your place; the ORION team will contact you about paying the fee.';
+  return 'Preview copy: payment runs in test mode and no money is charged.';
+}
+
+export function RegistrationReceipt({ registration, onPay, paying, backTo = '/events' }) {
   const meta = STATUS_META[registration.status] || STATUS_META.confirmed;
   const Icon = meta.icon;
   return (
@@ -287,20 +300,23 @@ function RegistrationReceipt({ registration, onPay, paying }) {
         <p className="text-sm text-slate-400">{meta.text}</p>
         <dl className="text-xs space-y-1.5">
           <div className="flex justify-between gap-3"><dt className="text-slate-500">Registration id</dt><dd className="font-mono text-white">{registration.id}</dd></div>
-          <div className="flex justify-between gap-3"><dt className="text-slate-500">Name</dt><dd className="text-slate-200">{registration.name}</dd></div>
+          {registration.teamName && (
+            <div className="flex justify-between gap-3"><dt className="text-slate-500">Team</dt><dd className="text-slate-200 truncate">{registration.teamName}{registration.teamSize ? ` · ${registration.teamSize} members` : ''}</dd></div>
+          )}
+          <div className="flex justify-between gap-3"><dt className="text-slate-500">{registration.teamName ? 'Team lead' : 'Name'}</dt><dd className="text-slate-200">{registration.name}</dd></div>
           <div className="flex justify-between gap-3"><dt className="text-slate-500">Email</dt><dd className="text-slate-200 truncate">{registration.email}</dd></div>
           {registration.payment?.paymentId && (
             <div className="flex justify-between gap-3"><dt className="text-slate-500">Payment</dt><dd className="font-mono text-slate-200 truncate">{registration.payment.paymentId}</dd></div>
           )}
         </dl>
       </div>
-      {registration.status === 'pending_payment' && (
+      {registration.status === 'pending_payment' && paymentsAvailable && (
         <button onClick={onPay} disabled={paying} className={`${primaryButton} w-full`}>
           <CreditCard className="w-4 h-4" /> {paying ? 'Opening payment…' : `Pay ₹${registration.amount}`}
         </button>
       )}
       <p className="text-[11px] text-slate-500">Keep your registration id. You can check your status any time on the events page.</p>
-      <Link to="/events" className={`${ghostButton} w-full`}>Back to all events</Link>
+      <Link to={backTo} className={`${ghostButton} w-full`}>Back to all events</Link>
     </div>
   );
 }

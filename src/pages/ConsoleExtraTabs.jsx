@@ -29,8 +29,9 @@ export function RegistrationsTab({ operator }) {
   };
 
   const exportCsv = () => {
-    const head = ['Registration id', 'Name', 'Email', 'Phone', 'SRN', 'School', 'Year', 'Status', 'Paid', 'Amount', 'Payment id', 'Registered at'];
-    const rows = regs.map((r) => [r.id, r.name, r.email, r.phone, r.srn, r.school, r.year, r.status, r.paid ? 'yes' : 'no', r.amount, r.payment?.paymentId || '', r.createdAt]);
+    const head = ['Registration id', 'Team', 'Team size', 'Name (lead)', 'Email', 'Phone', 'SRN', 'School', 'Year', 'Member 2', 'Member 2 email', 'Member 2 SRN', 'Member 3', 'Member 3 email', 'Member 3 SRN', 'Status', 'Paid', 'Amount', 'Payment id', 'Registered at'];
+    const member = (r, i) => { const m = (r.members || [])[i] || {}; return [m.name, m.email, m.srn]; };
+    const rows = regs.map((r) => [r.id, r.teamName, r.teamSize, r.name, r.email, r.phone, r.srn, r.school, r.year, ...member(r, 0), ...member(r, 1), r.status, r.paid ? 'yes' : 'no', r.amount, r.payment?.paymentId || '', r.createdAt]);
     const blob = new Blob([[head, ...rows].map((row) => row.map(csvCell).join(',')).join('\n')], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -95,7 +96,7 @@ export function RegistrationsTab({ operator }) {
               {regs.map((r) => (
                 <tr key={r.id} className="border-t border-white/[0.05] align-top">
                   <td className="px-5 py-3"><div className="font-mono text-xs text-white">{r.id}</div><div className="text-[11px] text-slate-500">{r.createdAt?.slice(0, 16).replace('T', ' ')}</div></td>
-                  <td className="px-5 py-3"><div className="text-white">{r.name}</div><div className="text-[11px] text-slate-500">{r.email} · {r.phone}{r.srn ? ` · ${r.srn}` : ''}</div></td>
+                  <td className="px-5 py-3">{r.teamName && <div className="text-[10px] uppercase tracking-[0.16em] text-slate-400">Team {r.teamName} · {r.teamSize}</div>}<div className="text-white">{r.name}</div><div className="text-[11px] text-slate-500">{r.email} · {r.phone}{r.srn ? ` · ${r.srn}` : ''}</div>{r.members?.length > 0 && <div className="text-[11px] text-slate-500 mt-1">+ {r.members.map((m) => m.name).join(', ')}</div>}</td>
                   <td className="px-5 py-3">
                     {r.amount > 0 ? <Pill tone={r.paid ? 'good' : 'warn'}>{r.paid ? `Paid ₹${r.amount}` : `Due ₹${r.amount}`}</Pill> : <Pill>Free</Pill>}
                     {r.payment?.paymentId && <div className="font-mono text-[10px] text-slate-500 mt-1">{r.payment.paymentId}</div>}
