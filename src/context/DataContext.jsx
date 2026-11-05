@@ -8,6 +8,11 @@ import {
   INITIAL_CLUB_MEMBERS,
   INITIAL_STUDENT_CANDIDATES
 } from '../lib/data';
+import {
+  INITIAL_DISPATCHES,
+  INITIAL_VENUES,
+  INITIAL_DISCIPLINE_CASES
+} from '../lib/content';
 import { 
   db, 
   isLiveFirebaseConfigured, 
@@ -28,6 +33,20 @@ export const useData = () => {
   }
   return context;
 };
+
+// Bump when the shape or naming of the seed data changes, so browsers holding an
+// old copy in localStorage (for example the old wing names) start fresh.
+const DATA_VERSION = '3-official-wing-names';
+try {
+  if (localStorage.getItem('orion_data_version') !== DATA_VERSION) {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('orion_') && k !== 'orion_sound_choice')
+      .forEach((k) => localStorage.removeItem(k));
+    localStorage.setItem('orion_data_version', DATA_VERSION);
+  }
+} catch {
+  // storage blocked: nothing cached to clear
+}
 
 export const DataProvider = ({ children }) => {
   // 1. Audition Slots State
@@ -51,7 +70,7 @@ export const DataProvider = ({ children }) => {
     return INITIAL_EVENTS;
   });
 
-  // 3. Wings State with 5-Wing Migration (Nanak, Zayd-Bodhi, Cultural, Arjuna, Media)
+  // 3. Wings State with 5-Wing Migration (Discipline Wing, Internal & External Wing, Cultural, Technical Wing, Media)
   const [wings, setWingsState] = useState(() => {
     const localWings = localStorage.getItem('orion_wings');
     if (localWings) {
@@ -93,7 +112,7 @@ export const DataProvider = ({ children }) => {
     if (localMembers) {
       try {
         const parsed = JSON.parse(localMembers);
-        if (parsed.length >= 5 && parsed.some(m => m.wing === 'NANAK' || m.wing === 'KALA-SANSKRITI')) return parsed;
+        if (parsed.length >= 5 && parsed.some(m => m.wing === 'Discipline Wing' || m.wing === 'Cultural Wing')) return parsed;
       } catch (e) {
         console.warn('Members migration error:', e);
       }
@@ -125,6 +144,41 @@ export const DataProvider = ({ children }) => {
 
   // Toast notification state
   const [toast, setToast] = useState(null);
+
+  // Portal data: notices, venues, discipline log, platform switches and the audit trail
+  const loadLocal = (key, fallback) => {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch {
+      return fallback;
+    }
+  };
+  const saveLocal = (key, value) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      // storage full or blocked: keep the in-memory copy
+    }
+  };
+
+  const [dispatches, setDispatches] = useState(() => loadLocal('orion_dispatches', INITIAL_DISPATCHES));
+  const [spotlights, setSpotlights] = useState(() => loadLocal('orion_spotlights', []));
+  const [inquiries, setInquiries] = useState(() => loadLocal('orion_inquiries', []));
+  const [registrations, setRegistrations] = useState(() => loadLocal('orion_registrations', []));
+  const [eventSettings, setEventSettings] = useState(() => loadLocal('orion_event_settings', {}));
+  const [venues, setVenues] = useState(() => loadLocal('orion_venues', INITIAL_VENUES));
+  const [disciplineCases, setDisciplineCases] = useState(() => loadLocal('orion_discipline_cases', INITIAL_DISCIPLINE_CASES));
+  const [platformSwitches, setPlatformSwitches] = useState(() => loadLocal('orion_platform_switches', {
+    publicRsvp: true,
+    recruitmentOpen: true,
+    maintenanceMode: false
+  }));
+  const [auditLog, setAuditLog] = useState(() => loadLocal('orion_audit_log', [
+    { id: 'aud-seed-3', at: '2026-10-05 18:10', operator: 'Nikhil Rao', action: 'Published notice', target: 'Charter review: the 3-flag system for this term', wing: 'Discipline Wing' },
+    { id: 'aud-seed-2', at: '2026-09-28 11:40', operator: 'Deepak Raj', action: 'Booked venue', target: 'Main Open Air Theatre (OAT) for Aura 2026', wing: 'Internal & External Wing' },
+    { id: 'aud-seed-1', at: '2026-09-01 09:00', operator: 'Siddharth Rao', action: 'Opened recruitment', target: 'Recruitment 2026', wing: 'CORE LEADERSHIP' }
+  ]));
   const [firestoreStatus, setFirestoreStatus] = useState(isLiveFirebaseConfigured ? 'connecting' : 'offline');
 
   const showToast = (message, type = 'success') => {
@@ -265,6 +319,7 @@ export const DataProvider = ({ children }) => {
     if (!isLiveFirebaseConfigured || !db) return;
 
     let unsubMembers, unsubEvents, unsubWings, unsubTeam, unsubSlots, unsubCandidates, unsubApps, unsubNotices;
+    const extraUnsubs = [];
 
     try {
       // 1. Members Listener
@@ -358,11 +413,22 @@ export const DataProvider = ({ children }) => {
         }
       }, (err) => console.warn('notices snapshot error:', err.message));
 
+      // 9. Spotlights (public), registrations and inbox (committee only; others get
+      // permission-denied from the security rules, which is expected)
+      const listen = (name, setter) =>
+        onSnapshot(collection(db, name), (snapshot) => {
+          const list = [];
+          snapshot.forEach(d => list.push({ id: d.id, ...d.data() }));
+          list.sort((a, b) => String(b.createdAt || b.date || '').localeCompare(String(a.createdAt || a.date || '')));
+          setter(list);
+        }, (err) => { if (err.code !== 'permission-denied') console.warn(`${name} snapshot error:`, err.message); });
+      extraUnsubs.push(listen('spotlights', setSpotlights), listen('registrations', setRegistrations), listen('inquiries', setInquiries));
     } catch (err) {
       console.warn('Error establishing Firestore listeners:', err);
     }
 
     return () => {
+      extraUnsubs.forEach(u => u && u());
       if (unsubMembers) unsubMembers();
       if (unsubEvents) unsubEvents();
       if (unsubWings) unsubWings();
@@ -504,7 +570,7 @@ export const DataProvider = ({ children }) => {
             id: `flag_${Date.now()}`,
             date: new Date().toISOString().split('T')[0],
             reason: reason.trim() || 'Disciplinary warning issued by Directorate',
-            issuedBy: 'NANAK Discipline Directorate',
+            issuedBy: 'Discipline Wing Directorate',
             flagsRemaining: newFlags
           };
 
@@ -551,7 +617,7 @@ export const DataProvider = ({ children }) => {
                 id: `renew_${Date.now()}`,
                 date: new Date().toISOString().split('T')[0],
                 reason: 'Disciplinary slate cleared. Flags renewed to 3/3 by Directorate.',
-                issuedBy: 'NANAK Discipline Directorate',
+                issuedBy: 'Discipline Wing Directorate',
                 flagsRemaining: 3
               },
               ...(m.flagHistory || [])
@@ -760,7 +826,7 @@ export const DataProvider = ({ children }) => {
       email: newMemberData.email,
       srn: newMemberData.srn || 'R23REVA',
       branch: newMemberData.branch || 'School of C&IT',
-      wing: newMemberData.wing || 'MEDIA & MARKETING',
+      wing: newMemberData.wing || 'Media & Marketing Wing',
       role: finalPosition,
       position: finalPosition,
       phone: newMemberData.phone || '+91 98765 43210',
@@ -1000,8 +1066,288 @@ export const DataProvider = ({ children }) => {
     showToast(`Application status updated to "${newStatus}"`, 'info');
   };
 
+  // ---------- Member spotlight ----------
+  // Starts empty on purpose: entries are added by the committee, never invented.
+  const addSpotlight = ({ memberName, wing, title, detail, date, postUrl, platform, operator }) => {
+    const entry = {
+      id: `spot-${Date.now()}`,
+      memberName: memberName.trim(),
+      wing: wing || '',
+      title: title.trim(),
+      detail: (detail || '').trim(),
+      date: date || new Date().toISOString().slice(0, 10),
+      postUrl: (postUrl || '').trim(),
+      platform: platform || 'Instagram',
+    };
+    setSpotlights(prev => {
+      const next = [entry, ...prev];
+      saveLocal('orion_spotlights', next);
+      return next;
+    });
+    syncDocToFirestore('spotlights', entry.id, entry);
+    recordAudit(operator, 'Added spotlight', `${entry.memberName}: ${entry.title}`, entry.wing);
+    showToast('Spotlight published', 'success');
+    return entry;
+  };
+
+  const removeSpotlight = (id, operator) => {
+    const gone = spotlights.find(sp => sp.id === id);
+    setSpotlights(prev => {
+      const next = prev.filter(sp => sp.id !== id);
+      saveLocal('orion_spotlights', next);
+      return next;
+    });
+    syncDocToFirestore('spotlights', id, null, true);
+    if (gone) recordAudit(operator, 'Removed spotlight', `${gone.memberName}: ${gone.title}`, gone.wing);
+  };
+
+  // ---------- Connect with ORION messages ----------
+  const submitInquiry = ({ name, email, topic, message }) => {
+    const entry = {
+      id: `msg-${Date.now()}`,
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      topic,
+      message: message.trim(),
+      createdAt: new Date().toISOString(),
+      status: 'new',
+    };
+    setInquiries(prev => {
+      const next = [entry, ...prev];
+      saveLocal('orion_inquiries', next);
+      return next;
+    });
+    syncDocToFirestore('inquiries', entry.id, entry);
+    return entry;
+  };
+
+  const setInquiryStatus = (id, status) => {
+    setInquiries(prev => {
+      const next = prev.map(m => (m.id === id ? { ...m, status } : m));
+      saveLocal('orion_inquiries', next);
+      return next;
+    });
+    syncDocToFirestore('inquiries', id, { status });
+  };
+
+  // ---------- Event registration ----------
+  // Settings per event: fee in rupees (0 = free), capacity (0 = unlimited), open or closed.
+  const eventSettingsFor = (eventId) => ({
+    fee: 0,
+    capacity: 0,
+    registrationOpen: true,
+    ...(events.find(e => e.id === eventId)?.registration || {}),
+    ...(eventSettings[eventId] || {}),
+  });
+
+  const updateEventSettings = (eventId, patch, operator) => {
+    const merged = { ...eventSettingsFor(eventId), ...patch };
+    setEventSettings(prev => {
+      const next = { ...prev, [eventId]: merged };
+      saveLocal('orion_event_settings', next);
+      return next;
+    });
+    syncDocToFirestore('events', eventId, { registration: merged });
+    const ev = events.find(e => e.id === eventId);
+    recordAudit(operator, 'Updated registration settings', ev?.title || eventId);
+  };
+
+  const registrationsFor = (eventId) => registrations.filter(r => r.eventId === eventId);
+
+  // Live site: the server creates the registration and decides fee, status and
+  // waitlist (api/registrations/create). Preview copy: same rules, in this browser.
+  const registerForEvent = async (eventId, form) => {
+    if (isLiveFirebaseConfigured) {
+      const res = await fetch('/api/registrations/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId, ...form }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) return { ok: false, reason: res.status === 409 ? 'closed' : 'error', message: data.error };
+      if (data.registration) {
+        setRegistrations(prev => [data.registration, ...prev.filter(r => r.id !== data.registration.id)]);
+      }
+      return data;
+    }
+
+    const settings = eventSettingsFor(eventId);
+    const email = form.email.trim().toLowerCase();
+    const existing = registrations.find(r => r.eventId === eventId && r.email === email && r.status !== 'cancelled');
+    if (existing) return { ok: false, reason: 'already', registration: existing };
+    if (!settings.registrationOpen) return { ok: false, reason: 'closed' };
+    const taken = registrations.filter(r => r.eventId === eventId && (r.status === 'confirmed' || r.status === 'pending_payment')).length;
+    const full = settings.capacity > 0 && taken >= settings.capacity;
+    const reg = {
+      id: `REG-${Date.now().toString(36).toUpperCase()}`,
+      eventId,
+      name: form.name.trim(),
+      email,
+      phone: form.phone.trim(),
+      srn: (form.srn || '').trim().toUpperCase(),
+      school: (form.school || '').trim(),
+      year: form.year || '',
+      createdAt: new Date().toISOString(),
+      amount: settings.fee,
+      paid: false,
+      status: full ? 'waitlisted' : settings.fee > 0 ? 'pending_payment' : 'confirmed',
+    };
+    setRegistrations(prev => {
+      const next = [reg, ...prev];
+      saveLocal('orion_registrations', next);
+      return next;
+    });
+    return { ok: true, registration: reg };
+  };
+
+  // Called only after the server has verified the Razorpay signature (or in preview test mode)
+  const markRegistrationPaid = (regId, payment) => {
+    setRegistrations(prev => {
+      const next = prev.map(r => (r.id === regId ? { ...r, paid: true, status: 'confirmed', payment } : r));
+      saveLocal('orion_registrations', next);
+      return next;
+    });
+  };
+
+  const setRegistrationStatus = (regId, status, operator) => {
+    const reg = registrations.find(r => r.id === regId);
+    setRegistrations(prev => {
+      const next = prev.map(r => (r.id === regId ? { ...r, status } : r));
+      saveLocal('orion_registrations', next);
+      return next;
+    });
+    syncDocToFirestore('registrations', regId, { status });
+    if (reg) recordAudit(operator, `Set registration ${status.replace('_', ' ')}`, `${reg.name} · ${regId}`);
+  };
+
+  const findRegistration = (idOrEmail) => {
+    const q = idOrEmail.trim().toLowerCase();
+    if (!q) return [];
+    return registrations.filter(r => r.id.toLowerCase() === q || r.email === q);
+  };
+
   const rsvpEvent = () => {
     showToast('🚀 RSVP Confirmed! Event details sent to your REVA Student calendar.', 'success');
+  };
+
+  // ---------- Portal operations ----------
+  const stamp = () => new Date().toISOString().slice(0, 16).replace('T', ' ');
+
+  const recordAudit = (operator, action, target, wing = '') => {
+    const entry = { id: `aud-${Date.now()}`, at: stamp(), operator: operator || 'Unknown', action, target, wing };
+    setAuditLog(prev => {
+      const next = [entry, ...prev].slice(0, 200);
+      saveLocal('orion_audit_log', next);
+      return next;
+    });
+    syncDocToFirestore('audit_log', entry.id, entry);
+  };
+
+  const publishDispatch = ({ title, body, category, author }) => {
+    const entry = {
+      id: `dsp-${Date.now()}`,
+      title: title.trim(),
+      body: body.trim(),
+      category,
+      author,
+      date: new Date().toISOString().slice(0, 10)
+    };
+    setDispatches(prev => {
+      const next = [entry, ...prev];
+      saveLocal('orion_dispatches', next);
+      return next;
+    });
+    syncDocToFirestore('dispatches', entry.id, entry);
+    recordAudit(author, 'Published notice', entry.title);
+    showToast('Notice published to the home page and member dashboards.', 'success');
+  };
+
+  const deleteDispatch = (id, operator) => {
+    const target = dispatches.find(d => d.id === id);
+    setDispatches(prev => {
+      const next = prev.filter(d => d.id !== id);
+      saveLocal('orion_dispatches', next);
+      return next;
+    });
+    syncDocToFirestore('dispatches', id, null, true);
+    recordAudit(operator, 'Removed notice', target?.title || id);
+    showToast('Notice removed.', 'info');
+  };
+
+  const setVenueStatus = (venueId, status, bookedFor, operator) => {
+    let name = venueId;
+    const next = venues.map(v => {
+      if (v.id !== venueId) return v;
+      name = v.name;
+      const updated = { ...v, status, bookedFor: status === 'Available' ? '' : (bookedFor ?? v.bookedFor) };
+      syncDocToFirestore('venues', v.id, updated);
+      return updated;
+    });
+    setVenues(next);
+    saveLocal('orion_venues', next);
+    recordAudit(operator, `Set venue to ${status}`, name, 'Internal & External Wing');
+    showToast(`${name} is now ${status.toLowerCase()}.`, 'success');
+  };
+
+  const addVenue = (venue, operator) => {
+    const entry = { id: `ven-${Date.now()}`, status: 'Available', bookedFor: '', amenities: [], ...venue };
+    setVenues(prev => {
+      const next = [...prev, entry];
+      saveLocal('orion_venues', next);
+      return next;
+    });
+    syncDocToFirestore('venues', entry.id, entry);
+    recordAudit(operator, 'Added venue', entry.name, 'Internal & External Wing');
+    showToast(`${entry.name} added to the venue desk.`, 'success');
+  };
+
+  const togglePlatformSwitch = (key, label, operator) => {
+    const next = { ...platformSwitches, [key]: !platformSwitches[key] };
+    setPlatformSwitches(next);
+    saveLocal('orion_platform_switches', next);
+    syncDocToFirestore('settings', 'platform', next);
+    recordAudit(operator, `${next[key] ? 'Turned on' : 'Turned off'}: ${label}`, 'Platform settings');
+  };
+
+  // Logs a discipline record and applies its effect to the member's flags or stars.
+  const logDisciplineCase = ({ memberId, severity, category, finding, action, officer }) => {
+    const member = clubMembers.find(m => m.id === memberId);
+    if (!member) return;
+    const entry = {
+      id: `case-${Date.now()}`,
+      date: new Date().toISOString().slice(0, 10),
+      memberId,
+      memberName: member.name,
+      wing: member.wing,
+      severity,
+      category: category.trim() || 'General',
+      finding: finding.trim(),
+      action: action.trim(),
+      status: severity === 'Commendation' ? 'Logged' : 'Under review',
+      officer
+    };
+    setDisciplineCases(prev => {
+      const next = [entry, ...prev];
+      saveLocal('orion_discipline_cases', next);
+      return next;
+    });
+    syncDocToFirestore('discipline_cases', entry.id, entry);
+    recordAudit(officer, `Logged ${severity.toLowerCase()} record`, member.name, 'Discipline Wing');
+    if (severity === 'Commendation') {
+      awardMemberStar(memberId, entry.finding || 'Commendation');
+    } else {
+      const flagsToRemove = severity === 'High' ? 2 : 1;
+      for (let i = 0; i < flagsToRemove; i++) removeMemberFlag(memberId, entry.finding);
+    }
+  };
+
+  const setCaseStatus = (caseId, status, operator) => {
+    const next = disciplineCases.map(c => (c.id === caseId ? { ...c, status } : c));
+    setDisciplineCases(next);
+    saveLocal('orion_discipline_cases', next);
+    const updated = next.find(c => c.id === caseId);
+    if (updated) syncDocToFirestore('discipline_cases', caseId, updated);
+    recordAudit(operator, `Marked case ${status.toLowerCase()}`, caseId, 'Discipline Wing');
   };
 
   const value = {
@@ -1041,7 +1387,34 @@ export const DataProvider = ({ children }) => {
     resetAllDataToDefault,
     syncAllDataToFirestore,
     toast,
-    showToast
+    showToast,
+    dispatches,
+    publishDispatch,
+    deleteDispatch,
+    venues,
+    setVenueStatus,
+    addVenue,
+    disciplineCases,
+    logDisciplineCase,
+    setCaseStatus,
+    platformSwitches,
+    togglePlatformSwitch,
+    auditLog,
+    recordAudit,
+    spotlights,
+    inquiries,
+    submitInquiry,
+    setInquiryStatus,
+    addSpotlight,
+    removeSpotlight,
+    registrations,
+    registrationsFor,
+    registerForEvent,
+    markRegistrationPaid,
+    setRegistrationStatus,
+    findRegistration,
+    eventSettingsFor,
+    updateEventSettings
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

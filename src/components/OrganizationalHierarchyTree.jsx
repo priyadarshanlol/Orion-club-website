@@ -68,17 +68,17 @@ function MemberNameCard({ name, role, wing, branch, avatar, colorBorder, isPresi
 export default function OrganizationalHierarchyTree() {
   const { currentUser } = useAuth();
   const { team, showToast } = useData();
-  const [selectedWingCode, setSelectedWingCode] = useState('NANAK');
+  const [selectedWingCode, setSelectedWingCode] = useState('Discipline Wing');
 
   // Default seed tree dataset for the 5 Wings
   const defaultWingsTree = [
     {
-      code: 'NANAK',
-      wingTitle: 'Wing 01: NANAK',
+      code: 'Discipline Wing',
+      wingTitle: 'Wing 01: Discipline Wing',
       wingCategory: 'Discipline, Governance & Operations',
       badgeColor: 'from-amber-600/20 to-orange-600/10 border-amber-600/40 text-amber-300',
       borderColor: 'border-amber-500/60',
-      vp: { name: 'Karthik Raju', role: 'Director / VP — NANAK', branch: 'School of Mech (4th Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80' },
+      vp: { name: 'Karthik Raju', role: 'Director / VP — Discipline Wing', branch: 'School of Mech (4th Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80' },
       secretaries: [
         { name: 'Varun Tej', role: 'Discipline Secretary', branch: 'School of EEE (3rd Year)', avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300&auto=format&fit=crop&q=80' },
         { name: 'Devika Pillai', role: 'Operations Secretary', branch: 'School of Civil (3rd Year)', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80' }
@@ -102,11 +102,11 @@ export default function OrganizationalHierarchyTree() {
     },
     {
       code: 'ZAYD',
-      wingTitle: 'Wing 02: ZAYD-BODHI',
+      wingTitle: 'Wing 02: Internal & External Wing',
       wingCategory: 'Internal & External Affairs',
       badgeColor: 'from-amber-500/20 to-amber-600/10 border-amber-500/40 text-amber-300',
       borderColor: 'border-amber-400/60',
-      vp: { name: 'Meera Krishnan', role: 'Director / VP — ZAYD-BODHI', branch: 'School of ECE (4th Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80' },
+      vp: { name: 'Meera Krishnan', role: 'Director / VP — Internal & External Wing', branch: 'School of ECE (4th Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80' },
       secretaries: [
         { name: 'Deepak Raj', role: 'Internal Affairs Secretary', branch: 'School of ECE (3rd Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80' },
         { name: 'Pooja Sharma', role: 'External Relations Secretary', branch: 'School of Arts (3rd Year)', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80' }
@@ -130,11 +130,11 @@ export default function OrganizationalHierarchyTree() {
     },
     {
       code: 'KALA',
-      wingTitle: 'Wing 03: KALA-SANSKRITI',
+      wingTitle: 'Wing 03: Cultural Wing',
       wingCategory: 'Cultural & Performing Arts Wing',
       badgeColor: 'from-pink-500/20 to-rose-600/10 border-pink-500/40 text-pink-300',
       borderColor: 'border-pink-400/60',
-      vp: { name: 'Drishya Nair', role: 'Director / VP — KALA-SANSKRITI', branch: 'School of Arts & Media (4th Year)', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80' },
+      vp: { name: 'Drishya Nair', role: 'Director / VP — Cultural Wing', branch: 'School of Arts & Media (4th Year)', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80' },
       secretaries: [
         { name: 'Rohan Sharma', role: 'Music & Stage Secretary', branch: 'School of Commerce (3rd Year)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80' },
         { name: 'Ananya V', role: 'Dance & Theater Secretary', branch: 'School of Humanities (3rd Year)', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80' }
@@ -157,12 +157,12 @@ export default function OrganizationalHierarchyTree() {
       ]
     },
     {
-      code: 'ARJUNA',
-      wingTitle: 'Wing 04: ARJUNA',
+      code: 'Technical Wing',
+      wingTitle: 'Wing 04: Technical Wing',
       wingCategory: 'Technical & Web Innovation',
       badgeColor: 'from-purple-500/20 to-indigo-600/10 border-purple-500/40 text-purple-300',
       borderColor: 'border-purple-400/60',
-      vp: { name: 'Aarav Sharma', role: 'Director / VP — ARJUNA', branch: 'School of C&IT (4th Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80' },
+      vp: { name: 'Aarav Sharma', role: 'Director / VP — Technical Wing', branch: 'School of C&IT (4th Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80' },
       secretaries: [
         { name: 'Kavya Nair', role: 'Software & Cloud Secretary', branch: 'School of C&IT (3rd Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80' },
         { name: 'Harish Rao', role: 'Systems & Hardware Sec.', branch: 'School of ECE (3rd Year)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80' }
@@ -186,11 +186,11 @@ export default function OrganizationalHierarchyTree() {
     },
     {
       code: 'MEDIA',
-      wingTitle: 'Wing 05: MEDIA & MARKETING',
+      wingTitle: 'Wing 05: Media & Marketing Wing',
       wingCategory: 'Digital Media, Campaigns & Gallery',
       badgeColor: 'from-cyan-500/20 to-blue-600/10 border-cyan-500/40 text-cyan-300',
       borderColor: 'border-cyan-400/60',
-      vp: { name: 'Aarush Malhotra', role: 'Director / VP — MEDIA & MARKETING', branch: 'School of Media & Journalism (4th Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80' },
+      vp: { name: 'Aarush Malhotra', role: 'Director / VP — Media & Marketing Wing', branch: 'School of Media & Journalism (4th Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80' },
       secretaries: [
         { name: 'Rhea Sen', role: 'Digital Media Secretary', branch: 'School of Arts & Media (3rd Year)', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80' },
         { name: 'Samarth Kulkarni', role: 'Marketing & PR Secretary', branch: 'School of Management (3rd Year)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80' }
@@ -219,7 +219,7 @@ export default function OrganizationalHierarchyTree() {
     if (!saved) return defaultWingsTree;
     try {
       const parsed = JSON.parse(saved);
-      // Migration: Ensure 5-wing layout and Kala-Sanskriti presence
+      // Migration: Ensure 5-wing layout and Cultural Wing presence
       const hasArya = parsed.some(w => w.code === 'ARYA' || w.wingTitle?.includes('SAMARITAN'));
       const hasKala = parsed.some(w => w.code === 'KALA');
       if (hasArya || !hasKala || parsed.length !== 5) {

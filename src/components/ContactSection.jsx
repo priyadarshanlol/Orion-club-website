@@ -40,8 +40,8 @@ export default function ContactSection() {
             <span>Campus Headquarters & Endorsements</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-100 font-display">
-            Contact & <span className="gold-glow text-amber-400">Collaborate</span>
+          <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-slate-100 leading-tight">
+            Contact & <span className="heading-accent">Collaborate</span>
           </h2>
 
           <p className="text-sm sm:text-base text-slate-400">

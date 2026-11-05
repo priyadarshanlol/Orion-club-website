@@ -75,7 +75,7 @@ export const formatUserRecord = (baseUser, remote = {}) => {
     ...merged,
     position,
     role: position,
-    wing: merged.wing || 'MEDIA & MARKETING',
+    wing: merged.wing || 'Media & Marketing Wing',
     isAdmin,
     isMember,
     isVisitor,
@@ -148,7 +148,7 @@ export const AuthProvider = ({ children }) => {
               photoURL: user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`,
               isRevaAccount: true,
               position: 'Visitor',
-              wing: 'MEDIA & MARKETING',
+              wing: 'Media & Marketing Wing',
               authProvider: 'firebase',
               lastLoginAt: new Date().toISOString()
             };
@@ -209,7 +209,7 @@ export const AuthProvider = ({ children }) => {
           photoURL: user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`,
           isRevaAccount: true,
           position: 'Visitor',
-          wing: 'MEDIA & MARKETING',
+          wing: 'Media & Marketing Wing',
           authProvider: 'microsoft-azure-ad',
           lastLoginAt: new Date().toISOString()
         };
@@ -261,7 +261,7 @@ export const AuthProvider = ({ children }) => {
       photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${finalEmail}`,
       isRevaAccount: true,
       position: 'Visitor',
-      wing: 'MEDIA & MARKETING',
+      wing: 'Media & Marketing Wing',
       authProvider: 'reva-microsoft-sso',
       lastLoginAt: new Date().toISOString()
     };
@@ -337,7 +337,7 @@ export const AuthProvider = ({ children }) => {
       srn: srn.trim().toUpperCase(),
       branch: branch || 'School of C&IT',
       year: year || '2nd Year (Sophomore)',
-      wing: wing || 'MEDIA & MARKETING',
+      wing: wing || 'Media & Marketing Wing',
       phone: phone.trim(),
       authProvider: 'email-password'
     };
@@ -415,7 +415,7 @@ export const AuthProvider = ({ children }) => {
       photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanEmail}`,
       isRevaAccount: true,
       position: 'Visitor',
-      wing: 'MEDIA & MARKETING',
+      wing: 'Media & Marketing Wing',
       authProvider: 'email-password',
       lastLoginAt: new Date().toISOString()
     };
@@ -541,6 +541,29 @@ export const AuthProvider = ({ children }) => {
 
   const clearAuthError = () => setAuthError(null);
 
+  // Preview sign-in: lets the site be explored as a sample roster member.
+  // Only offered when live Firebase is not configured.
+  const signInAsPreviewUser = (member) => {
+    if (isLiveFirebaseConfigured || !member) return null;
+    const previewUser = formatUserRecord({
+      uid: `preview_${member.id}`,
+      displayName: member.name,
+      email: member.email,
+      photoURL: member.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${member.email}`,
+      position: member.role,
+      wing: member.wing,
+      srn: member.srn,
+      branch: member.branch,
+      isMember: true,
+      isRevaAccount: true,
+      authProvider: 'preview',
+      lastLoginAt: new Date().toISOString()
+    });
+    setCurrentUser(previewUser);
+    localStorage.setItem('orion_simulated_user', JSON.stringify(previewUser));
+    return previewUser;
+  };
+
   // 3-Tier Layer resolution:
   // 1. Visitor: default for unauthenticated users & new accounts (isVisitor === true)
   // 2. Member: has isMember === true
@@ -568,6 +591,7 @@ export const AuthProvider = ({ children }) => {
     updateUserProfile,
     logout,
     clearAuthError,
+    signInAsPreviewUser,
     isLiveFirebaseConfigured
   };
 

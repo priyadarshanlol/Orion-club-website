@@ -914,7 +914,7 @@ service cloud.firestore {
             {/* TAB 2: WINGS DETAILS */}
             {activeTab === 'wings' && (
               <div className="space-y-4">
-                <h4 className="text-sm font-bold text-amber-400">Manage 5 Wings Information (Nanak, Zayd-Bodhi, Kala-Sanskriti, Arjuna, Media & Marketing)</h4>
+                <h4 className="text-sm font-bold text-amber-400">Manage 5 Wings Information (Discipline Wing, Internal & External Wing, Cultural Wing, Technical Wing, Media & Marketing Wing)</h4>
                 <div className="space-y-4">
                   {wings.map((wing, idx) => (
                     <div key={wing.id} className="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-3 text-xs">

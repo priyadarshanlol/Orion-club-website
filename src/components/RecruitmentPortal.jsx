@@ -8,11 +8,11 @@ import { ShieldCheck, LogIn, Sparkles, Send, User, BookOpen, Layers, CheckCircle
 import { motion } from 'framer-motion';
 
 const WING_CHOICES = [
-  { id: 'nanak', label: '01 - NANAK (Discipline & Governance)' },
-  { id: 'zayd-bodhi', label: '02 - ZAYD-BODHI (Internal & External Affairs)' },
-  { id: 'cultural', label: '03 - KALA-SANSKRITI (Cultural & Performing Arts)' },
-  { id: 'arjuna', label: '04 - ARJUNA (Technical Projects & Web)' },
-  { id: 'media', label: '05 - MEDIA & MARKETING (Media Coverage & PR)' }
+  { id: 'discipline', label: '01 - Discipline Wing' },
+  { id: 'internal-external', label: '02 - Internal & External Wing' },
+  { id: 'cultural', label: '03 - Cultural Wing' },
+  { id: 'technical', label: '04 - Technical Wing' },
+  { id: 'media', label: '05 - Media & Marketing Wing (Media Coverage & PR)' }
 ];
 
 export default function RecruitmentPortal() {
@@ -29,7 +29,7 @@ export default function RecruitmentPortal() {
   const [phone, setPhone] = useState(currentUser?.phone || '');
   const [branch, setBranch] = useState(currentUser?.branch || 'School of C&IT');
   const [semester, setSemester] = useState('3rd Semester (2nd Year)');
-  const [primaryWing, setPrimaryWing] = useState('nanak');
+  const [primaryWing, setPrimaryWing] = useState('discipline');
   const [secondaryWing, setSecondaryWing] = useState('cultural');
   const [roleApplied, setRoleApplied] = useState('Core Member');
   const [sop, setSop] = useState('');
@@ -126,8 +126,8 @@ export default function RecruitmentPortal() {
             <span>Recruitment & Auditions 2026 • 5 Specialized Wings</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-100 font-display">
-            Join the <span className="gold-glow text-amber-400">ORION</span> Constellation
+          <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-slate-100 leading-tight">
+            Join the <span className="heading-accent">ORION</span> Constellation
           </h2>
 
           <p className="text-sm sm:text-base text-slate-400">

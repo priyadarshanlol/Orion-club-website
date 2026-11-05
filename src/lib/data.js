@@ -2,9 +2,9 @@
 
 export const INITIAL_WINGS = [
   {
-    id: 'nanak',
+    id: 'discipline',
     code: '01',
-    name: 'NANAK',
+    name: 'Discipline Wing',
     tagline: 'Discipline, Governance & Operations',
     iconName: 'ShieldCheck',
     badgeColor: 'from-amber-600 to-orange-600',
@@ -26,9 +26,9 @@ export const INITIAL_WINGS = [
     ]
   },
   {
-    id: 'zayd-bodhi',
+    id: 'internal-external',
     code: '02',
-    name: 'ZAYD-BODHI',
+    name: 'Internal & External Wing',
     tagline: 'Internal & External Affairs',
     iconName: 'Globe',
     badgeColor: 'from-amber-500 to-yellow-500',
@@ -52,7 +52,7 @@ export const INITIAL_WINGS = [
   {
     id: 'cultural',
     code: '03',
-    name: 'KALA-SANSKRITI',
+    name: 'Cultural Wing',
     tagline: 'Cultural & Performing Arts Wing',
     iconName: 'Sparkles',
     badgeColor: 'from-pink-500 to-rose-600',
@@ -74,9 +74,9 @@ export const INITIAL_WINGS = [
     ]
   },
   {
-    id: 'arjuna',
+    id: 'technical',
     code: '04',
-    name: 'ARJUNA',
+    name: 'Technical Wing',
     tagline: 'Technical & Web Innovation',
     iconName: 'Code2',
     badgeColor: 'from-purple-500 to-indigo-600',
@@ -100,7 +100,7 @@ export const INITIAL_WINGS = [
   {
     id: 'media',
     code: '05',
-    name: 'MEDIA & MARKETING',
+    name: 'Media & Marketing Wing',
     tagline: 'Media Coverage, Campaigns & Gallery',
     iconName: 'Megaphone',
     badgeColor: 'from-cyan-500 to-blue-600',
@@ -175,8 +175,8 @@ export const INITIAL_EVENTS = [
   {
     id: 'evt-1',
     title: 'ORION Recruitment & Auditions 2026',
-    wing: 'NANAK (Discipline) & ZAYD-BODHI (Venue)',
-    wingId: 'nanak',
+    wing: 'Discipline Wing & Internal & External Wing',
+    wingId: 'discipline',
     date: 'September 5 - 7, 2026',
     time: '4:30 PM - 6:30 PM IST',
     timestamp: '2026-09-05T16:30:00',
@@ -193,7 +193,7 @@ export const INITIAL_EVENTS = [
   {
     id: 'evt-2',
     title: 'Aura 2026: Inter-College Cultural HackFest',
-    wing: 'KALA-SANSKRITI (Cultural) & ARJUNA (Tech)',
+    wing: 'Cultural Wing & Technical Wing',
     wingId: 'cultural',
     date: 'October 14, 2026',
     time: '9:00 AM - Next Day 9:00 AM',
@@ -211,7 +211,7 @@ export const INITIAL_EVENTS = [
   {
     id: 'evt-3',
     title: 'Tarang 2026: State Cultural Fest & Dance Conclave',
-    wing: 'KALA-SANSKRITI (Cultural Wing)',
+    wing: 'Cultural Wing',
     wingId: 'cultural',
     date: 'November 18, 2026',
     time: '5:00 PM - 10:00 PM IST',
@@ -229,12 +229,12 @@ export const INITIAL_EVENTS = [
   {
     id: 'evt-past-1',
     title: 'Constellation Gala & Annual Awards 2025',
-    wing: 'MEDIA & MARKETING / NANAK',
+    wing: 'Media & Marketing Wing / Discipline Wing',
     wingId: 'media',
     date: 'December 18, 2025',
     time: '6:00 PM - 9:30 PM IST',
     venue: 'REVA Central Auditorium',
-    venueCoordinator: 'ZAYD-BODHI Venue Desk',
+    venueCoordinator: 'Internal & External Wing Venue Desk',
     description: 'Celebrated the achievements of 100+ ORION members with performance showcases, disciplinary honor rolls, and star member awards.',
     bannerUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&auto=format&fit=crop&q=80',
     isUpcoming: false,
@@ -257,13 +257,13 @@ export const INITIAL_EVENTS = [
   {
     id: 'evt-past-2',
     title: 'Cyber-Vault Hardware & Tech Expo',
-    wing: 'ARJUNA / MEDIA & MARKETING',
-    wingId: 'arjuna',
+    wing: 'Technical Wing / Media & Marketing Wing',
+    wingId: 'technical',
     date: 'August 22, 2025',
     time: '10:00 AM - 4:00 PM IST',
     venue: 'REVA C&IT Exhibition Hall',
-    venueCoordinator: 'ZAYD-BODHI Venue Desk',
-    description: 'Showcased 18 IoT and autonomous robotics projects built by Arjuna wing members to faculty and industry visitors.',
+    venueCoordinator: 'Internal & External Wing Venue Desk',
+    description: 'Showcased 18 IoT and autonomous robotics projects built by Technical Wing members to faculty and industry visitors.',
     bannerUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=80',
     isUpcoming: false,
     isFinished: true,
@@ -283,12 +283,12 @@ export const INITIAL_EVENTS = [
   {
     id: 'evt-past-3',
     title: 'Dhwani Cultural Night & Battle of Bands',
-    wing: 'KALA-SANSKRITI / MEDIA',
+    wing: 'Cultural Wing / MEDIA',
     wingId: 'cultural',
     date: 'April 15, 2025',
     time: '6:30 PM - 10:30 PM IST',
     venue: 'Main Open Air Theatre (OAT)',
-    venueCoordinator: 'ZAYD-BODHI Venue Desk',
+    venueCoordinator: 'Internal & External Wing Venue Desk',
     description: 'A 4-hour live stage festival featuring university bands, fusion vocalists, and electrifying choreography ensembles.',
     bannerUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80',
     isUpcoming: false,
@@ -324,44 +324,44 @@ export const INITIAL_TEAM = [
   {
     category: 'Directors / Vice Presidents',
     members: [
-      { name: 'Nikhil Rao', role: 'Director / VP — NANAK', wing: 'NANAK (Discipline & Governance)', branch: 'School of Mech (4th Year)', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&auto=format&fit=crop&q=80', email: 'nikhil.r@reva.edu.in', phone: '+91 98450 11003' },
-      { name: 'Meera Krishnan', role: 'Director / VP — ZAYD-BODHI', wing: 'ZAYD-BODHI (Internal & External)', branch: 'School of ECE (4th Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', email: 'meera.k@reva.edu.in', phone: '+91 98450 11004' },
-      { name: 'Drishya Nair', role: 'Director / VP — KALA-SANSKRITI', wing: 'KALA-SANSKRITI (Cultural)', branch: 'School of Arts & Media (4th Year)', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80', email: 'drishya.n@reva.edu.in', phone: '+91 98450 11005' },
-      { name: 'Aarav Sharma', role: 'Director / VP — ARJUNA', wing: 'ARJUNA (Tech Projects)', branch: 'School of C&IT (4th Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', email: 'aarav.s@reva.edu.in', phone: '+91 98450 11006' },
-      { name: 'Aarush Malhotra', role: 'Director / VP — PULSE', wing: 'MEDIA & MARKETING', branch: 'School of Media & Journalism (4th Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80', email: 'aarush.m@reva.edu.in', phone: '+91 98450 11007' }
+      { name: 'Nikhil Rao', role: 'Director / VP — Discipline Wing', wing: 'Discipline Wing', branch: 'School of Mech (4th Year)', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&auto=format&fit=crop&q=80', email: 'nikhil.r@reva.edu.in', phone: '+91 98450 11003' },
+      { name: 'Meera Krishnan', role: 'Director / VP — Internal & External Wing', wing: 'Internal & External Wing', branch: 'School of ECE (4th Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', email: 'meera.k@reva.edu.in', phone: '+91 98450 11004' },
+      { name: 'Drishya Nair', role: 'Director / VP — Cultural Wing', wing: 'Cultural Wing', branch: 'School of Arts & Media (4th Year)', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80', email: 'drishya.n@reva.edu.in', phone: '+91 98450 11005' },
+      { name: 'Aarav Sharma', role: 'Director / VP — Technical Wing', wing: 'Technical Wing', branch: 'School of C&IT (4th Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', email: 'aarav.s@reva.edu.in', phone: '+91 98450 11006' },
+      { name: 'Aarush Malhotra', role: 'Director / VP — Media & Marketing Wing', wing: 'Media & Marketing Wing', branch: 'School of Media & Journalism (4th Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80', email: 'aarush.m@reva.edu.in', phone: '+91 98450 11007' }
     ]
   },
   {
     category: 'Secretaries',
     members: [
-      { name: 'Varun Tej', role: 'Discipline & Operations Secretary', wing: 'NANAK', branch: 'School of EEE (3rd Year)', avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11008' },
-      { name: 'Deepak Raj', role: 'Internal & External Secretary', wing: 'ZAYD-BODHI', branch: 'School of ECE (3rd Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11009' },
-      { name: 'Ananya Hegde', role: 'Cultural Affairs Secretary', wing: 'KALA-SANSKRITI', branch: 'School of Arts & Media (3rd Year)', avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11010' },
-      { name: 'Kavya Nair', role: 'Technical Systems Secretary', wing: 'ARJUNA', branch: 'School of C&IT (3rd Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11011' },
-      { name: 'Rhea Sen', role: 'Digital Media Secretary', wing: 'MEDIA & MARKETING', branch: 'School of Arts & Media (3rd Year)', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11012' },
-      { name: 'Samarth Kulkarni', role: 'Marketing & PR Secretary', wing: 'MEDIA & MARKETING', branch: 'School of Management (3rd Year)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11013' }
+      { name: 'Varun Tej', role: 'Discipline & Operations Secretary', wing: 'Discipline Wing', branch: 'School of EEE (3rd Year)', avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11008' },
+      { name: 'Deepak Raj', role: 'Internal & External Secretary', wing: 'Internal & External Wing', branch: 'School of ECE (3rd Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11009' },
+      { name: 'Ananya Hegde', role: 'Cultural Affairs Secretary', wing: 'Cultural Wing', branch: 'School of Arts & Media (3rd Year)', avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11010' },
+      { name: 'Kavya Nair', role: 'Technical Systems Secretary', wing: 'Technical Wing', branch: 'School of C&IT (3rd Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11011' },
+      { name: 'Rhea Sen', role: 'Digital Media Secretary', wing: 'Media & Marketing Wing', branch: 'School of Arts & Media (3rd Year)', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11012' },
+      { name: 'Samarth Kulkarni', role: 'Marketing & PR Secretary', wing: 'Media & Marketing Wing', branch: 'School of Management (3rd Year)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11013' }
     ]
   },
   {
     category: 'Leads',
     members: [
-      { name: 'Vikramaditya Sen', role: 'Discipline & Flag Oversight Lead', wing: 'NANAK', branch: 'School of Management (3rd Year)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11014' },
-      { name: 'Rohan Verma', role: 'External Partnerships Lead', wing: 'ZAYD-BODHI', branch: 'School of ECE (3rd Year)', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11015' },
-      { name: 'Priya Sharma', role: 'Stage & Performance Lead', wing: 'KALA-SANSKRITI', branch: 'School of Arts (3rd Year)', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11016' },
-      { name: 'Karthik Raja', role: 'Full-Stack Lead', wing: 'ARJUNA', branch: 'School of C&IT (3rd Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11017' },
-      { name: 'Aditya Varma', role: 'Digital Campaigns Lead', wing: 'MEDIA & MARKETING', branch: 'School of Media & Journalism (3rd Year)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11018' },
-      { name: 'Pooja Hegde', role: 'Brand Marketing & Outreach Lead', wing: 'MEDIA & MARKETING', branch: 'School of Management (3rd Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11019' }
+      { name: 'Vikramaditya Sen', role: 'Discipline & Flag Oversight Lead', wing: 'Discipline Wing', branch: 'School of Management (3rd Year)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11014' },
+      { name: 'Rohan Verma', role: 'External Partnerships Lead', wing: 'Internal & External Wing', branch: 'School of ECE (3rd Year)', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11015' },
+      { name: 'Priya Sharma', role: 'Stage & Performance Lead', wing: 'Cultural Wing', branch: 'School of Arts (3rd Year)', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11016' },
+      { name: 'Karthik Raja', role: 'Full-Stack Lead', wing: 'Technical Wing', branch: 'School of C&IT (3rd Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11017' },
+      { name: 'Aditya Varma', role: 'Digital Campaigns Lead', wing: 'Media & Marketing Wing', branch: 'School of Media & Journalism (3rd Year)', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11018' },
+      { name: 'Pooja Hegde', role: 'Brand Marketing & Outreach Lead', wing: 'Media & Marketing Wing', branch: 'School of Management (3rd Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11019' }
     ]
   },
   {
     category: 'Co-Leads',
     members: [
-      { name: 'Ananya Deshmukh', role: 'Duty Timings Co-Lead', wing: 'NANAK', branch: 'School of Commerce (2nd Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11020' },
-      { name: 'Rahul V', role: 'Campus Venues Co-Lead', wing: 'ZAYD-BODHI', branch: 'School of Mech (2nd Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11021' },
-      { name: 'Tarun Sharma', role: 'Choreography Co-Lead', wing: 'KALA-SANSKRITI', branch: 'School of Design (2nd Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11022' },
-      { name: 'Sneha Patel', role: 'Web Apps Co-Lead', wing: 'ARJUNA', branch: 'School of C&IT (2nd Year)', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11023' },
-      { name: 'Farhan Ali', role: 'Visual Production Co-Lead', wing: 'MEDIA & MARKETING', branch: 'School of Design (2nd Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11024' },
-      { name: 'Nikhil Verma', role: 'Sponsorships Co-Lead', wing: 'MEDIA & MARKETING', branch: 'School of Commerce (2nd Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11025' }
+      { name: 'Ananya Deshmukh', role: 'Duty Timings Co-Lead', wing: 'Discipline Wing', branch: 'School of Commerce (2nd Year)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11020' },
+      { name: 'Rahul V', role: 'Campus Venues Co-Lead', wing: 'Internal & External Wing', branch: 'School of Mech (2nd Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11021' },
+      { name: 'Tarun Sharma', role: 'Choreography Co-Lead', wing: 'Cultural Wing', branch: 'School of Design (2nd Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11022' },
+      { name: 'Sneha Patel', role: 'Web Apps Co-Lead', wing: 'Technical Wing', branch: 'School of C&IT (2nd Year)', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11023' },
+      { name: 'Farhan Ali', role: 'Visual Production Co-Lead', wing: 'Media & Marketing Wing', branch: 'School of Design (2nd Year)', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11024' },
+      { name: 'Nikhil Verma', role: 'Sponsorships Co-Lead', wing: 'Media & Marketing Wing', branch: 'School of Commerce (2nd Year)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80', phone: '+91 98450 11025' }
     ]
   }
 ];
@@ -369,7 +369,7 @@ export const INITIAL_TEAM = [
 export const NOTICE_TICKER_ITEMS = [
   '🚨 RECRUITMENT 2026 IS LIVE! Sign in using REVA Microsoft SSO (@reva.edu.in).',
   '📅 Audition Slots filling fast for Day 1 & Day 2! Reserve your time window in the portal.',
-  '✨ Explore our 5 Specialized Wings: Nanak (Discipline), Zayd-Bodhi (Venues), Kala-Sanskriti (Cultural), Arjuna (Tech), and Media & Marketing!',
+  '✨ Explore our 5 Specialized Wings: Discipline Wing (Discipline), Internal & External Wing (Venues), Cultural Wing (Cultural), Technical Wing (Tech), and Media & Marketing!',
   '🏆 Member Performance Leaderboard: Check your active points, 3-flag standing, and hours logged.'
 ];
 
@@ -384,7 +384,7 @@ export const INITIAL_STUDENT_CANDIDATES = [
     year: '2nd Year (Sophomore)',
     phone: '+91 98451 22334',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=TanmayBhatt',
-    preferredWing: 'MEDIA & MARKETING',
+    preferredWing: 'Media & Marketing Wing',
     roleSuggested: 'Digital Content Creator'
   },
   {
@@ -396,7 +396,7 @@ export const INITIAL_STUDENT_CANDIDATES = [
     year: '2nd Year (Sophomore)',
     phone: '+91 97410 99881',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AnanyaSharma',
-    preferredWing: 'ARJUNA',
+    preferredWing: 'Technical Wing',
     roleSuggested: 'Frontend Developer'
   },
   {
@@ -408,7 +408,7 @@ export const INITIAL_STUDENT_CANDIDATES = [
     year: '3rd Year (Junior)',
     phone: '+91 98860 33445',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=RohanVerma',
-    preferredWing: 'ZAYD-BODHI',
+    preferredWing: 'Internal & External Wing',
     roleSuggested: 'External Liaison Associate'
   },
   {
@@ -420,7 +420,7 @@ export const INITIAL_STUDENT_CANDIDATES = [
     year: '2nd Year (Sophomore)',
     phone: '+91 99001 55667',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SnehaKulkarni',
-    preferredWing: 'ARJUNA',
+    preferredWing: 'Technical Wing',
     roleSuggested: 'ML Model Contributor'
   },
   {
@@ -432,7 +432,7 @@ export const INITIAL_STUDENT_CANDIDATES = [
     year: '3rd Year (Junior)',
     phone: '+91 96112 77889',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=RahulIyer',
-    preferredWing: 'NANAK',
+    preferredWing: 'Discipline Wing',
     roleSuggested: 'Auditorium Duty Coordinator'
   },
   {
@@ -444,7 +444,7 @@ export const INITIAL_STUDENT_CANDIDATES = [
     year: '2nd Year (Sophomore)',
     phone: '+91 98455 66778',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=PoojaHegde',
-    preferredWing: 'MEDIA & MARKETING',
+    preferredWing: 'Media & Marketing Wing',
     roleSuggested: 'Sponsorship Executive'
   },
   {
@@ -456,7 +456,7 @@ export const INITIAL_STUDENT_CANDIDATES = [
     year: '3rd Year (Junior)',
     phone: '+91 99801 23456',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=DrishyaNair',
-    preferredWing: 'KALA-SANSKRITI',
+    preferredWing: 'Cultural Wing',
     roleSuggested: 'Cultural Stage Performer'
   },
   {
@@ -468,7 +468,7 @@ export const INITIAL_STUDENT_CANDIDATES = [
     year: '2nd Year (Sophomore)',
     phone: '+91 94480 88990',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=VikramadityaSen',
-    preferredWing: 'NANAK',
+    preferredWing: 'Discipline Wing',
     roleSuggested: 'Ground Discipline Marshal'
   },
   {
@@ -480,7 +480,7 @@ export const INITIAL_STUDENT_CANDIDATES = [
     year: '2nd Year (Sophomore)',
     phone: '+91 97400 11223',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=IshitaRoy',
-    preferredWing: 'KALA-SANSKRITI',
+    preferredWing: 'Cultural Wing',
     roleSuggested: 'Stage Decor & Production Lead'
   },
   {
@@ -492,7 +492,7 @@ export const INITIAL_STUDENT_CANDIDATES = [
     year: '1st Year (Fresher)',
     phone: '+91 98800 44556',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=VarunJoshi',
-    preferredWing: 'MEDIA & MARKETING',
+    preferredWing: 'Media & Marketing Wing',
     roleSuggested: 'Event Videographer'
   }
 ];
@@ -527,8 +527,8 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Nikhil Rao',
     email: 'nikhil.r@reva.edu.in',
     srn: 'R21ME088',
-    wing: 'NANAK',
-    role: 'Director / VP — NANAK',
+    wing: 'Discipline Wing',
+    role: 'Director / VP — Discipline Wing',
     branch: 'School of Mech (4th Year)',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&auto=format&fit=crop&q=80',
     phone: '+91 98450 11003',
@@ -549,8 +549,8 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Meera Krishnan',
     email: 'meera.k@reva.edu.in',
     srn: 'R21EC088',
-    wing: 'ZAYD-BODHI',
-    role: 'Director / VP — ZAYD-BODHI',
+    wing: 'Internal & External Wing',
+    role: 'Director / VP — Internal & External Wing',
     branch: 'School of ECE (4th Year)',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
     phone: '+91 98450 11004',
@@ -571,8 +571,8 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Aarav Sharma',
     email: 'aarav.s@reva.edu.in',
     srn: 'R21CI033',
-    wing: 'ARJUNA',
-    role: 'Director / VP — ARJUNA',
+    wing: 'Technical Wing',
+    role: 'Director / VP — Technical Wing',
     branch: 'School of C&IT (4th Year)',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80',
     phone: '+91 98450 11006',
@@ -593,8 +593,8 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Aarush Malhotra',
     email: 'aarush.m@reva.edu.in',
     srn: 'R21MJ012',
-    wing: 'MEDIA & MARKETING',
-    role: 'Director / VP — PULSE',
+    wing: 'Media & Marketing Wing',
+    role: 'Director / VP — Media & Marketing Wing',
     branch: 'School of Media & Journalism (4th Year)',
     avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80',
     phone: '+91 98450 11007',
@@ -615,8 +615,8 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Drishya Nair',
     email: 'drishya.n@reva.edu.in',
     srn: 'R21AM045',
-    wing: 'KALA-SANSKRITI',
-    role: 'Director / VP — KALA-SANSKRITI',
+    wing: 'Cultural Wing',
+    role: 'Director / VP — Cultural Wing',
     branch: 'School of Arts & Media (4th Year)',
     avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&auto=format&fit=crop&q=80',
     phone: '+91 98450 11005',
@@ -637,7 +637,7 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Rhea Sen',
     email: 'rhea.s@reva.edu.in',
     srn: 'R22MJ044',
-    wing: 'MEDIA & MARKETING',
+    wing: 'Media & Marketing Wing',
     role: 'Digital Media Secretary',
     branch: 'School of Arts & Media (3rd Year)',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80',
@@ -659,7 +659,7 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Samarth Kulkarni',
     email: 'samarth.k@reva.edu.in',
     srn: 'R22MG092',
-    wing: 'MEDIA & MARKETING',
+    wing: 'Media & Marketing Wing',
     role: 'Marketing & PR Secretary',
     branch: 'School of Management (3rd Year)',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&auto=format&fit=crop&q=80',
@@ -681,7 +681,7 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Varun Tej',
     email: 'varun.t@reva.edu.in',
     srn: 'R22EE061',
-    wing: 'NANAK',
+    wing: 'Discipline Wing',
     role: 'Discipline & Operations Secretary',
     branch: 'School of EEE (3rd Year)',
     avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=300&auto=format&fit=crop&q=80',
@@ -703,7 +703,7 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Ananya Hegde',
     email: 'ananya.h@reva.edu.in',
     srn: 'R22EC014',
-    wing: 'KALA-SANSKRITI',
+    wing: 'Cultural Wing',
     role: 'Cultural Affairs Secretary',
     branch: 'School of ECE (3rd Year)',
     avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&auto=format&fit=crop&q=80',
@@ -725,7 +725,7 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Karthik Raja',
     email: 'karthik.r@reva.edu.in',
     srn: 'R22CI090',
-    wing: 'ARJUNA',
+    wing: 'Technical Wing',
     role: 'Full-Stack Lead',
     branch: 'School of C&IT (3rd Year)',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80',
@@ -747,7 +747,7 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Alex Rodriguez',
     email: 'alex.r22ci045@reva.edu.in',
     srn: 'R22CI045',
-    wing: 'ARJUNA',
+    wing: 'Technical Wing',
     role: 'Active Member & Dev Contributor',
     branch: 'School of C&IT (2nd Year)',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
@@ -769,7 +769,7 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Sneha Roy',
     email: 'sneha.r@reva.edu.in',
     srn: 'R23AM077',
-    wing: 'MEDIA & MARKETING',
+    wing: 'Media & Marketing Wing',
     role: 'Campus Promotions Co-Lead',
     branch: 'School of Arts & Media (2nd Year)',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&auto=format&fit=crop&q=80',
@@ -778,7 +778,7 @@ export const INITIAL_CLUB_MEMBERS = [
     overallScore: 78,
     flags: 2, // 1 Warning issued
     flagHistory: [
-      { date: '2026-09-01', reason: 'Unexcused absence from mandatory wing sync', issuedBy: 'NANAK Discipline Directorate' }
+      { date: '2026-09-01', reason: 'Unexcused absence from mandatory wing sync', issuedBy: 'Discipline Wing Directorate' }
     ],
     status: 'warning',
     stars: 1,
@@ -793,7 +793,7 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Rohan Gupta',
     email: 'rohan.g@reva.edu.in',
     srn: 'R23ME041',
-    wing: 'ZAYD-BODHI',
+    wing: 'Internal & External Wing',
     role: 'External Relations Associate',
     branch: 'School of Mech (2nd Year)',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&auto=format&fit=crop&q=80',
@@ -802,8 +802,8 @@ export const INITIAL_CLUB_MEMBERS = [
     overallScore: 68,
     flags: 1, // 2 Warnings issued
     flagHistory: [
-      { date: '2026-08-22', reason: 'Late delivery of vendor logistics reports', issuedBy: 'NANAK Discipline Directorate' },
-      { date: '2026-08-30', reason: 'Missed volunteer team briefing', issuedBy: 'NANAK Discipline Directorate' }
+      { date: '2026-08-22', reason: 'Late delivery of vendor logistics reports', issuedBy: 'Discipline Wing Directorate' },
+      { date: '2026-08-30', reason: 'Missed volunteer team briefing', issuedBy: 'Discipline Wing Directorate' }
     ],
     status: 'warning',
     stars: 0,
@@ -818,7 +818,7 @@ export const INITIAL_CLUB_MEMBERS = [
     name: 'Rohit B. Gowda',
     email: 'rohit.b@reva.edu.in',
     srn: 'R23CV019',
-    wing: 'NANAK',
+    wing: 'Discipline Wing',
     role: 'Former Ground Operations Associate',
     branch: 'School of Civil (2nd Year)',
     avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&auto=format&fit=crop&q=80',
@@ -827,9 +827,9 @@ export const INITIAL_CLUB_MEMBERS = [
     overallScore: 40,
     flags: 0, // All 3 flags removed -> FIRED
     flagHistory: [
-      { date: '2026-08-10', reason: 'Failure to show up for scheduled auditorium setup', issuedBy: 'NANAK Discipline Directorate' },
-      { date: '2026-08-18', reason: 'Unprofessional conduct during club briefing', issuedBy: 'NANAK Discipline Directorate' },
-      { date: '2026-08-28', reason: 'Continued non-compliance with club attendance policy. All 3 flags exhausted.', issuedBy: 'NANAK Discipline Directorate' }
+      { date: '2026-08-10', reason: 'Failure to show up for scheduled auditorium setup', issuedBy: 'Discipline Wing Directorate' },
+      { date: '2026-08-18', reason: 'Unprofessional conduct during club briefing', issuedBy: 'Discipline Wing Directorate' },
+      { date: '2026-08-28', reason: 'Continued non-compliance with club attendance policy. All 3 flags exhausted.', issuedBy: 'Discipline Wing Directorate' }
     ],
     status: 'fired',
     stars: 0,

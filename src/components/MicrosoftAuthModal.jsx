@@ -47,11 +47,11 @@ const REVA_BRANCHES = [
 const REVA_YEARS = ['1st Year (Fresher)', '2nd Year (Sophomore)', '3rd Year (Junior)', '4th Year (Senior)'];
 
 const WING_OPTIONS = [
-  '01 - NANAK (Discipline & Governance)',
-  '02 - ZAYD-BODHI (Internal & External Affairs)',
-  '03 - KALA-SANSKRITI (Cultural & Performing Arts)',
-  '04 - ARJUNA (Technical & Web Innovation)',
-  '05 - MEDIA & MARKETING (Media, Campaigns & PR)'
+  '01 - Discipline Wing',
+  '02 - Internal & External Wing',
+  '03 - Cultural Wing',
+  '04 - Technical Wing',
+  '05 - Media & Marketing Wing (Media, Campaigns & PR)'
 ];
 
 export default function MicrosoftAuthModal({ isOpen, onClose }) {

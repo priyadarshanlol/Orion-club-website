@@ -30,8 +30,8 @@ export default function TeamSection() {
               <span>Leadership & Hierarchy</span>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-100 font-display">
-              Meet Team <span className="gold-glow text-amber-400">ORION</span>
+            <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-slate-100 leading-tight">
+              Meet Team <span className="heading-accent">ORION</span>
             </h2>
 
             <p className="text-sm sm:text-base text-slate-400">
