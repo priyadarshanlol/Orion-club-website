@@ -365,7 +365,7 @@ export const DataProvider = ({ children }) => {
       }, (err) => console.warn('audition_slots snapshot error:', err.message));
 
       // 6. Student Candidates Listener
-      unsubCandidates = onSnapshot(collection(db, 'student_candidates'), (snapshot) => {
+      if (authUid) unsubCandidates = onSnapshot(collection(db, 'student_candidates'), (snapshot) => {
         if (!snapshot.empty) {
           const list = [];
           snapshot.forEach(d => list.push({ id: d.id, ...d.data() }));
@@ -375,7 +375,7 @@ export const DataProvider = ({ children }) => {
       }, (err) => console.warn('student_candidates snapshot error:', err.message));
 
       // 7. Applications Listener
-      unsubApps = onSnapshot(collection(db, 'recruitment_applications'), (snapshot) => {
+      if (authUid) unsubApps = onSnapshot(collection(db, 'recruitment_applications'), (snapshot) => {
         if (!snapshot.empty) {
           const apps = {};
           snapshot.forEach(d => {
