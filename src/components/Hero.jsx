@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowRight, Layers, Users, Calendar, Award } from 'lucide-react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import orionMark from '../assets/orion-mark.png';
 import Sparkle from './Sparkle';
+import { subscribeMotion } from '../lib/motionInput';
 
 // Poster-style star chart that frames the logo: dotted orbits, hairline axes, sparkles at the nodes.
 function StarChart() {
@@ -42,11 +44,12 @@ function StarChart() {
 }
 
 export default function Hero() {
-  const metrics = [
-    { label: 'Specialized Wings', value: '5', unit: 'Wings', sub: 'Nanak, Zayd-Bodhi, Kala-Sanskriti, Arjuna, Media & Marketing', icon: Layers },
-    { label: 'Active Members', value: '100+', unit: '', sub: 'Across 12 REVA Schools', icon: Users },
-    { label: 'Flagship Events', value: '15+', unit: '', sub: 'Fests, Conclaves & Expos', icon: Calendar },
-    { label: 'Campus Impact', value: '3,500+', unit: '', sub: 'Participating Students', icon: Award },
+  // The four homepage cards are navigation cards (same layout and styling as before)
+  const navCards = [
+    { label: 'Meet ORION', value: 'Directory', sub: 'Hierarchy, member profiles and live search', icon: Users, to: '/team' },
+    { label: 'Member Spotlight', value: 'Spotlight', sub: 'Member achievements and the posts behind them', icon: Award, to: '/spotlight' },
+    { label: 'Upcoming Events', value: 'Events', sub: 'Event pages, registration and payment', icon: Calendar, to: '/events' },
+    { label: 'Connect with ORION', value: 'Connect', sub: 'Socials, email and every way to reach us', icon: Layers, to: '/contact' },
   ];
 
   // 3D tilt of the emblem following the pointer
@@ -56,6 +59,22 @@ export default function Hero() {
   const rotX = useSpring(useTransform(my, [-1, 1], [14, -14]), { stiffness: 80, damping: 18 });
   const glowX = useTransform(mx, [-1, 1], ['35%', '65%']);
   const glowY = useTransform(my, [-1, 1], ['35%', '65%']);
+
+  // On phones the gyroscope drives the same tilt (see lib/motionInput)
+  useEffect(
+    () =>
+      subscribeMotion(({ x, y, source }) => {
+        if (source !== 'gyro') return;
+        mx.set(x);
+        my.set(y);
+      }),
+    [mx, my]
+  );
+  // in-and-out depth: the emblem comes towards you as it tilts away from centre
+  const depth = useSpring(
+    useTransform([mx, my], ([x, y]) => 1 + Math.min(1, Math.hypot(x, y)) * 0.08),
+    { stiffness: 70, damping: 16 }
+  );
 
   const onMove = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -84,7 +103,7 @@ export default function Hero() {
           <Sparkle className="hidden sm:block absolute top-1/2 -right-10 -translate-y-1/2 w-5 h-5 text-white animate-twinkle" style={{ animationDelay: '2.1s' }} />
 
           <motion.div
-            style={{ rotateX: rotX, rotateY: rotY, transformStyle: 'preserve-3d' }}
+            style={{ rotateX: rotX, rotateY: rotY, scale: depth, transformStyle: 'preserve-3d' }}
             className="absolute inset-[22%] flex items-center justify-center"
           >
             <motion.div
@@ -113,32 +132,14 @@ export default function Hero() {
           transition={{ duration: 1, delay: 0.35 }}
           className="mt-10 space-y-4"
         >
-          <h1 className="font-display font-extrabold leading-none text-[clamp(3.5rem,13vw,9rem)] tracking-[0.06em] pl-[0.06em] text-starlight gold-glow">
+          <h1 className="hero-wordmark font-extrabold leading-none text-[clamp(3.5rem,13vw,9rem)] tracking-[0.06em] pl-[0.06em] text-starlight gold-glow">
             ORION
           </h1>
-          <p className="font-display font-semibold text-[11px] sm:text-sm tracking-[0.55em] pl-[0.55em] text-slate-200 uppercase">
-            Earned not favoured
-          </p>
-          <div className="star-rule max-w-md mx-auto pt-2">
+          <div className="star-rule max-w-md mx-auto">
             <Sparkle className="w-3.5 h-3.5" />
           </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.6 }}
-          className="mt-6 space-y-4"
-        >
-          <p className="font-serif italic text-2xl sm:text-4xl text-slate-100">
-            The vision. The minds. The force.
-          </p>
-          <p className="font-serif text-[11px] sm:text-xs tracking-[0.45em] pl-[0.45em] uppercase text-slate-400">
-            Club ORION · REVA University · Bengaluru
-          </p>
-          <p className="max-w-2xl mx-auto text-sm sm:text-base text-slate-400 leading-relaxed pt-2">
-            The premier multi-dimensional student organization at REVA University, uniting technical innovation,
-            member culture, operational discipline, external outreach and creative media into one constellation.
+          <p className="hero-wordmark font-semibold text-[11px] sm:text-sm tracking-[0.55em] pl-[0.55em] text-slate-200 uppercase">
+            Earned not favoured
           </p>
         </motion.div>
 
@@ -149,22 +150,21 @@ export default function Hero() {
           transition={{ duration: 0.9, delay: 0.8 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-10"
         >
-          <a
-            href="#wings"
+          <Link
+            to="/recruitment"
             className="group relative w-full sm:w-auto overflow-hidden px-8 py-4 text-sm font-bold tracking-[0.2em] uppercase text-slate-950 bg-white rounded-full shadow-[0_0_40px_-8px_rgba(255,255,255,0.6)] hover:shadow-[0_0_60px_-6px_rgba(255,255,255,0.8)] transition-all flex items-center justify-center gap-3"
           >
-            <span>Explore the 5 Wings</span>
+            <span>Join ORION</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </a>
-          <a
-            href="#team"
+          </Link>
+          <Link
+            to="/events"
             className="w-full sm:w-auto px-8 py-4 text-sm font-semibold tracking-[0.2em] uppercase text-slate-100 rounded-full border border-white/25 hover:border-white/70 bg-white/[0.03] hover:bg-white/[0.07] backdrop-blur-md transition-all flex items-center justify-center gap-3"
           >
             <Sparkle className="w-3 h-3" />
-            <span>Meet the Core</span>
-          </a>
+            <span>Upcoming events</span>
+          </Link>
         </motion.div>
-
         {/* Metrics */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -172,21 +172,26 @@ export default function Hero() {
           transition={{ duration: 1, delay: 1 }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 pt-16 text-left"
         >
-          {metrics.map((m) => {
+          {navCards.map((m) => {
             const Icon = m.icon;
             return (
-              <div key={m.label} className="glass-card rounded-2xl p-5 relative overflow-hidden group hover:-translate-y-1">
+              <Link
+                key={m.label}
+                to={m.to}
+                aria-label={`${m.label}: ${m.sub}`}
+                className="glass-card rounded-2xl p-5 relative overflow-hidden group hover:-translate-y-1 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 active:scale-[0.98]"
+              >
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.22em]">{m.label}</span>
                   <Icon className="w-4 h-4 text-slate-300 group-hover:text-white transition-colors" />
                 </div>
-                <div className="font-serif text-4xl sm:text-5xl text-white leading-none">
-                  {m.value}
-                  {m.unit && <span className="font-display text-xs tracking-[0.3em] uppercase text-slate-400 ml-2">{m.unit}</span>}
+                <div className="font-serif text-3xl sm:text-5xl text-white leading-none flex items-end justify-between gap-2">
+                  <span className="truncate">{m.value}</span>
+                  <ArrowRight className="w-4 h-4 shrink-0 mb-1 text-slate-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
                 </div>
                 <div className="text-xs text-slate-500 mt-2 truncate">{m.sub}</div>
                 <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
+              </Link>
             );
           })}
         </motion.div>

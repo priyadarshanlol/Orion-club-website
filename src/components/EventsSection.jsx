@@ -30,17 +30,17 @@ export default function EventsSection() {
   const isSuperAdmin = currentUser?.isAdmin;
   const isInternalExternalLeader = 
     isSuperAdmin || 
-    (currentUser && (currentUser.wing === 'ZAYD-BODHI' || currentUser.wing?.includes('ZAYD-BODHI')) &&
+    (currentUser && (currentUser.wing === 'Internal & External Wing' || currentUser.wing?.toUpperCase().includes('INTERNAL')) &&
     (currentUser.role?.includes('Director') || currentUser.role?.includes('Secretary') || currentUser.role?.includes('Lead')));
   
   const isMediaMarketingLeader = 
     isSuperAdmin || 
-    (currentUser && (currentUser.wing === 'MEDIA & MARKETING' || currentUser.wing?.includes('MEDIA')) &&
+    (currentUser && (currentUser.wing === 'Media & Marketing Wing' || currentUser.wing?.toUpperCase().includes('MEDIA')) &&
     (currentUser.role?.includes('Director') || currentUser.role?.includes('Secretary') || currentUser.role?.includes('Lead')));
 
   const isCulturalLeader = 
     isSuperAdmin || 
-    (currentUser && (currentUser.wing === 'KALA-SANSKRITI' || currentUser.wing?.includes('CULTURAL')) &&
+    (currentUser && (currentUser.wing === 'Cultural Wing' || currentUser.wing?.toUpperCase().includes('CULTURAL')) &&
     (currentUser.role?.includes('Director') || currentUser.role?.includes('Secretary') || currentUser.role?.includes('Lead')));
 
   // Edit Mode States in Modal
@@ -50,7 +50,7 @@ export default function EventsSection() {
   const [editTimeInput, setEditTimeInput] = useState('');
   const [editCoordinatorInput, setEditCoordinatorInput] = useState('');
 
-  // Media & Marketing Upload States
+  // Media & Marketing Wing Upload States
   const [isEditingMedia, setIsEditingMedia] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryVideos, setGalleryVideos] = useState([]);
@@ -154,7 +154,7 @@ export default function EventsSection() {
     setIsEditingVenue(false);
   };
 
-  // Save Event Media Gallery (Media & Marketing)
+  // Save Event Media Gallery (Media & Marketing Wing)
   const handleSaveMedia = () => {
     if (!selectedEventModal) return;
     uploadEventMedia(selectedEventModal.id, {
@@ -201,8 +201,8 @@ export default function EventsSection() {
               <span>Flagships & Timeline • 5 Wings</span>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-100 font-display">
-              Events & <span className="gold-glow text-amber-400">Exhibitions</span>
+            <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-slate-100 leading-tight">
+              Events & <span className="heading-accent">Exhibitions</span>
             </h2>
 
             <p className="text-sm sm:text-base text-slate-400">
@@ -664,7 +664,7 @@ export default function EventsSection() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider">
                         <ImageIcon className="w-4 h-4" />
-                        <span>Multimedia Gallery (Managed by Media & Marketing)</span>
+                        <span>Multimedia Gallery (Managed by Media & Marketing Wing)</span>
                       </div>
 
                       {isMediaMarketingLeader && (
@@ -679,7 +679,7 @@ export default function EventsSection() {
                       )}
                     </div>
 
-                    {/* Media & Marketing Upload Tool */}
+                    {/* Media & Marketing Wing Upload Tool */}
                     {isEditingMedia && isMediaMarketingLeader && (
                       <div className="p-4 rounded-2xl bg-slate-900/90 border border-amber-500/40 space-y-4 text-xs">
                         <div className="flex items-center justify-between">

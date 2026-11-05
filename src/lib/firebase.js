@@ -5,7 +5,8 @@ import {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signInWithPopup, 
-  signOut as firebaseSignOut 
+  signOut as firebaseSignOut,
+  connectAuthEmulator
 } from 'firebase/auth';
 import { 
   getFirestore, 
@@ -20,7 +21,8 @@ import {
   deleteDoc,
   writeBatch,
   increment, 
-  serverTimestamp 
+  serverTimestamp,
+  connectFirestoreEmulator
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
@@ -48,6 +50,12 @@ try {
   auth = getAuth(app);
   db = getFirestore(app);
   storage = getStorage(app);
+
+  // Local testing against the Firebase emulators (never set this in Vercel).
+  if (import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true') {
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+    connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  }
   
   // Microsoft OAuth Provider configured for REVA Azure AD / Microsoft 365
   microsoftProvider = new OAuthProvider('microsoft.com');

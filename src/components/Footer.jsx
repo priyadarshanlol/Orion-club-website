@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowUp, ShieldCheck } from 'lucide-react';
 import orionMark from '../assets/orion-mark.png';
 import Sparkle from './Sparkle';
@@ -43,11 +44,11 @@ export default function Footer() {
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider font-display">The 5 Wings</h4>
             <ul className="space-y-2 text-xs">
-              <li><a href="#wings" className="hover:text-amber-400 transition-colors">Wing 01: NANAK (Discipline & Operations)</a></li>
-              <li><a href="#wings" className="hover:text-amber-400 transition-colors">Wing 02: ZAYD-BODHI (Internal & External)</a></li>
-              <li><a href="#wings" className="hover:text-amber-400 transition-colors">Wing 03: KALA-SANSKRITI (Cultural & Arts)</a></li>
-              <li><a href="#wings" className="hover:text-amber-400 transition-colors">Wing 04: ARJUNA (Technical & Web)</a></li>
-              <li><a href="#wings" className="hover:text-amber-400 transition-colors">Wing 05: MEDIA & MARKETING</a></li>
+              <li><Link to="/wings/discipline" className="hover:text-amber-400 transition-colors">Wing 01: Discipline Wing</Link></li>
+              <li><Link to="/wings/internal-external" className="hover:text-amber-400 transition-colors">Wing 02: Internal & External Wing</Link></li>
+              <li><Link to="/wings/cultural" className="hover:text-amber-400 transition-colors">Wing 03: Cultural Wing</Link></li>
+              <li><Link to="/wings/technical" className="hover:text-amber-400 transition-colors">Wing 04: Technical Wing</Link></li>
+              <li><Link to="/wings/media" className="hover:text-amber-400 transition-colors">Wing 05: Media & Marketing Wing</Link></li>
             </ul>
           </div>
 
@@ -55,11 +56,15 @@ export default function Footer() {
           <div className="space-y-3">
             <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider font-display font-bold">Portal Links</h4>
             <ul className="space-y-2 text-xs">
-              <li><a href="#club-management" className="text-amber-400 font-semibold hover:underline transition-colors">Member Hub (Points & 3-Flags)</a></li>
-              <li><a href="#team" className="hover:text-amber-400 transition-colors">Executive Team Roster & Tree</a></li>
-              <li><a href="#events" className="hover:text-amber-400 transition-colors">Flagship Events & RSVP</a></li>
-              <li><a href="#recruitment" className="hover:text-amber-400 transition-colors">Recruitment 2026 Portal</a></li>
-              <li><a href="#contact" className="hover:text-amber-400 transition-colors">Contact Headquarters</a></li>
+              <li><Link to="/portal" className="text-amber-400 font-semibold hover:underline transition-colors">Member, committee & discipline portals</Link></li>
+              <li><Link to="/gallery" className="hover:text-amber-400 transition-colors">Media Gallery</Link></li>
+              <li><Link to="/about" className="hover:text-amber-400 transition-colors">About ORION</Link></li>
+              <li><Link to="/team" className="hover:text-amber-400 transition-colors">Meet ORION: directory</Link></li>
+              <li><Link to="/hackathon" className="hover:text-amber-400 transition-colors">Aarambh 2026 hackathon</Link></li>
+              <li><Link to="/spotlight" className="hover:text-amber-400 transition-colors">Member Spotlight</Link></li>
+              <li><Link to="/events" className="hover:text-amber-400 transition-colors">Upcoming events & registration</Link></li>
+              <li><Link to="/recruitment" className="hover:text-amber-400 transition-colors">Recruitment 2026 Portal</Link></li>
+              <li><Link to="/contact" className="hover:text-amber-400 transition-colors">Connect with ORION</Link></li>
             </ul>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { subscribeMotion } from '../lib/motionInput';
 
 /*
  * ORION — 3D celestial sphere background.
@@ -441,9 +442,10 @@ export default function ConstellationBackground() {
       target.yaw = p * 345;
       target.pitch = Math.sin(p * Math.PI * 2) * 7;
     };
-    const onMouse = (e) => {
-      target.mx = (e.clientX / window.innerWidth - 0.5) * 2;
-      target.my = (e.clientY / window.innerHeight - 0.5) * 2;
+    // Mouse on desktop, gyroscope tilt on phones (see lib/motionInput)
+    const onMotion = ({ x, y }) => {
+      target.mx = x;
+      target.my = y;
     };
     const onResize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -453,7 +455,7 @@ export default function ConstellationBackground() {
     };
     readScroll();
     window.addEventListener('scroll', readScroll, { passive: true });
-    window.addEventListener('mousemove', onMouse, { passive: true });
+    const stopMotion = subscribeMotion(onMotion);
     window.addEventListener('resize', onResize);
 
     // ---- Loop ----
@@ -478,7 +480,10 @@ export default function ConstellationBackground() {
       camera.rotation.order = 'YXZ';
       camera.rotation.y = deg(current.yaw) + current.mx * -0.06 + (reduceMotion ? 0 : Math.sin(t * 0.05) * 0.02);
       camera.rotation.x = deg(current.pitch) + current.my * -0.04;
+      // the further you look away from centre, the deeper the camera drifts in
+      const reach = Math.min(1, Math.hypot(current.mx, current.my));
       camera.position.set(current.mx * 9, -current.my * 6, 0);
+      camera.translateZ(-reach * 14);
 
       sky.rotation.z = reduceMotion ? 0 : t * 0.004;
 
@@ -546,7 +551,7 @@ export default function ConstellationBackground() {
       running = false;
       cancelAnimationFrame(raf);
       window.removeEventListener('scroll', readScroll);
-      window.removeEventListener('mousemove', onMouse);
+      stopMotion();
       window.removeEventListener('resize', onResize);
       document.removeEventListener('visibilitychange', onVisibility);
       scene.traverse((o) => {

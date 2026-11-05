@@ -1,55 +1,105 @@
 rules_version = '2';
+
+// ORION Firestore security rules.
+// Roles live on users/{uid}: isAdmin / isLeadership are set by an existing admin
+// (or in the Firebase console for the very first admin), never by the user.
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Club Members (Points, 3-Flags, Stars, Duty Hours)
-    match /club_members/{memberId} {
-      allow read, write: if true;
+
+    function signedIn() { return request.auth != null; }
+    function reva() {
+      return signedIn() && request.auth.token.email.matches('.*@reva[.]edu[.]in$')
+        && (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider != 'password');
+    }
+    function profile() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function committee() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && (profile().get('isAdmin', false) == true || profile().get('isLeadership', false) == true);
+    }
+    function onlyChanges(fields) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields); }
+
+    // ---------- public content, edited by the committee ----------
+    match /wings/{id}        { allow read: if true; allow write: if committee(); }
+    match /team/{id}         { allow read: if true; allow write: if committee(); }
+    match /events/{id}       { allow read: if true; allow write: if committee(); }
+    match /notices/{id}      { allow read: if true; allow write: if committee(); }
+    match /dispatches/{id}   { allow read: if true; allow write: if committee(); }
+    match /spotlights/{id}   { allow read: if true; allow write: if committee(); }
+    match /venues/{id}       { allow read: if true; allow write: if committee(); }
+    match /settings/{id}     { allow read: if true; allow write: if committee(); }
+
+    // Member roster: public profiles for the directory and leaderboard
+    match /club_members/{id} { allow read: if true; allow write: if committee(); }
+
+    // Audition slots: anyone signed in with REVA can take a seat (count up by one)
+    match /audition_slots/{id} {
+      allow read: if true;
+      allow write: if committee();
+      allow update: if reva()
+        && onlyChanges(['bookedCount'])
+        && request.resource.data.bookedCount == resource.data.bookedCount + 1
+        && request.resource.data.bookedCount <= resource.data.get('capacity', 100000);
     }
 
-    // Flagship Events & RSVP & Media Gallery
-    match /events/{eventId} {
-      allow read, write: if true;
+    // ---------- people ----------
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || committee());
+      // first sign-in: a plain visitor record, no roles
+      // (email need not be verified yet: sign-up writes this before the link is clicked)
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.auth.token.email.matches('.*@reva[.]edu[.]in$')
+        && request.resource.data.get('isAdmin', false) == false
+        && request.resource.data.get('isLeadership', false) == false
+        && request.resource.data.get('position', 'Visitor') == 'Visitor';
+      // own profile: everything except role, position, wing, points, flags and stars
+      allow update: if (request.auth.uid == uid
+          && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['isAdmin', 'isLeadership', 'isMember', 'position', 'role', 'wing', 'points', 'flags', 'stars', 'status']))
+        || committee();
+      allow delete: if committee();
     }
 
-    // 5 Wings Information
-    match /wings/{wingId} {
-      allow read, write: if true;
+    match /recruitment_applications/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || committee());
+      allow create: if reva() && request.auth.uid == uid && request.resource.data.get('status', 'Submitted') == 'Submitted';
+      allow update, delete: if committee();
+    }
+    match /student_candidates/{id} {
+      // a new student adds their own candidate record at sign-up; committee does the rest
+      allow create: if signedIn() && request.auth.uid == id
+        && request.auth.token.email.matches('.*@reva[.]edu[.]in$');
+      allow read, update, delete: if committee();
     }
 
-    // Executive & Wing Team Hierarchy Roster
-    match /team/{teamId} {
-      allow read, write: if true;
+    // ---------- operations ----------
+    match /discipline_cases/{id} { allow read, write: if committee(); }
+    match /audit_log/{id} {
+      allow read: if committee();
+      allow create: if committee();
+      allow update, delete: if false;   // the audit trail is append-only
     }
 
-    // Student Candidates (for autocomplete search)
-    match /student_candidates/{candidateId} {
-      allow read, write: if true;
+    // Registrations are created and paid only through the server (api/), which
+    // checks the fee and the Razorpay signature. The committee may change status.
+    match /registrations/{id} {
+      allow read: if committee();
+      allow update: if committee() && onlyChanges(['status']);
+      allow create, delete: if false;
     }
 
-    // Audition Slots
-    match /audition_slots/{slotId} {
-      allow read, write: if true;
-    }
-    
-    // Recruitment Applications
-    match /recruitment_applications/{appId} {
-      allow read, write: if true;
-    }
-
-    // Campus Notice Ticker
-    match /notices/{noticeId} {
-      allow read, write: if true;
+    // Connect with ORION messages: anyone can send one, only the committee reads them
+    match /inquiries/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['id', 'name', 'email', 'topic', 'message', 'createdAt', 'status'])
+        && request.resource.data.status == 'new'
+        && request.resource.data.name is string && request.resource.data.name.size() <= 100
+        && request.resource.data.email is string && request.resource.data.email.size() <= 120
+        && request.resource.data.message is string && request.resource.data.message.size() <= 2000;
+      allow read, delete: if committee();
+      allow update: if committee() && onlyChanges(['status']);
     }
 
-    // User Profiles
-    match /users/{userId} {
-      allow read, write: if true;
-    }
-
-    // Site Settings and Meta
-    match /{document=**} {
-      allow read, write: if true;
-    }
+    // everything else is closed
+    match /{document=**} { allow read, write: if false; }
   }
 }

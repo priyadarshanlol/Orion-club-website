@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import React, { useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
@@ -24,11 +25,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MicrosoftLogo } from './MicrosoftAuthModal';
 
 const WING_OPTIONS_LIST = [
-  'NANAK',
-  'ZAYD-BODHI',
-  'KALA-SANSKRITI',
-  'ARJUNA',
-  'MEDIA & MARKETING'
+  'Discipline Wing',
+  'Internal & External Wing',
+  'Cultural Wing',
+  'Technical Wing',
+  'Media & Marketing Wing'
 ];
 
 export default function MemberManagementHub({ onOpenAuth }) {
@@ -74,7 +75,7 @@ export default function MemberManagementHub({ onOpenAuth }) {
   const [logTask, setLogTask] = useState('');
   const [logCategory, setLogCategory] = useState('Event Duty');
   const [editRole, setEditRole] = useState('');
-  const [editWing, setEditWing] = useState('NANAK');
+  const [editWing, setEditWing] = useState('Discipline Wing');
   const [editBranch, setEditBranch] = useState('');
 
   // Register New Member Modal
@@ -85,7 +86,7 @@ export default function MemberManagementHub({ onOpenAuth }) {
   const [newMemSrn, setNewMemSrn] = useState('');
   const [newMemBranch, setNewMemBranch] = useState('School of C&IT');
   const [newMemPhone, setNewMemPhone] = useState('');
-  const [newMemWing, setNewMemWing] = useState('NANAK');
+  const [newMemWing, setNewMemWing] = useState('Discipline Wing');
   const [newMemRole, setNewMemRole] = useState('Club Member');
   const [newMemAvatar, setNewMemAvatar] = useState(null);
 
@@ -100,9 +101,9 @@ export default function MemberManagementHub({ onOpenAuth }) {
   );
 
   // Position-based authority:
-  // Discipline Directorate (NANAK Director / Secretary / Lead), Core Leadership (President / Vice President), or Backend Admin
+  // Discipline Directorate (Discipline Wing Director / Secretary / Lead), Core Leadership (President / Vice President), or Backend Admin
   const isDisciplineLeadership = 
-    (userWing.includes('NANAK') || userWing.includes('DISCIPLINE')) &&
+    (userWing.includes('Discipline Wing') || userWing.includes('DISCIPLINE')) &&
     (userPos.includes('director') || userPos.includes('secretary') || userPos.includes('lead'));
 
   const isCoreLeadership = 
@@ -126,7 +127,7 @@ export default function MemberManagementHub({ onOpenAuth }) {
     setLogHours('');
     setLogTask('');
     setEditRole(member.role || 'Club Member');
-    setEditWing(member.wing || 'NANAK');
+    setEditWing(member.wing || 'Discipline Wing');
     setEditBranch(member.branch || 'School of C&IT');
   };
 
@@ -261,8 +262,8 @@ export default function MemberManagementHub({ onOpenAuth }) {
               <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
               <span>5 Specialized Wings • Club ORION Governance</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-100 font-display">
-              Member Operations & <span className="gold-glow text-amber-400">Performance Hub</span>
+            <h2 className="font-display font-extrabold text-3xl sm:text-5xl text-slate-100 leading-tight">
+              Member Operations & <span className="heading-accent">Performance Hub</span>
             </h2>
             <p className="text-sm text-slate-400 max-w-2xl">
               Real-time points, 3-flag disciplinary records, star honors, duty hour tracking, and dynamic candidate onboarding across all 5 wings.
@@ -332,12 +333,12 @@ export default function MemberManagementHub({ onOpenAuth }) {
                 <span>Sign In with Microsoft 365 (@reva.edu.in)</span>
               </button>
 
-              <a
-                href="#recruitment"
+              <Link
+                to="/recruitment"
                 className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm transition-all"
               >
                 Apply via Recruitment 2026
-              </a>
+              </Link>
             </div>
           </motion.div>
         )}

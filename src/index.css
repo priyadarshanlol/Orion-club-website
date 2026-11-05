@@ -7,9 +7,13 @@
  * silver, steel and deep-space black without touching component logic.
  */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Montserrat", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Bodoni Moda", "Didot", "Times New Roman", serif;
+  /* Typography system: Sora for headings and wing names, DM Sans for body text,
+     Cormorant Garamond for decorative serif and italic accents.
+     The hero ORION wordmark and its tagline keep their original Montserrat. */
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Sora", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", "Garamond", "Times New Roman", serif;
+  --font-wordmark: "Montserrat", ui-sans-serif, system-ui, sans-serif;
 
   /* deep space neutrals (was slate) */
   --color-slate-50: #f7f8fa;
@@ -107,7 +111,7 @@
   }
   section h2 {
     font-family: var(--font-display);
-    letter-spacing: 0.02em;
+    letter-spacing: -0.01em;
   }
 
   ::selection {
@@ -318,12 +322,114 @@ section [class*="rounded-full"][class*="uppercase"][class*="tracking-wider"] {
   }
 }
 
-/* Section titles: bold sans with a high-contrast serif accent, like "ORION / CORE" on the poster */
+/* Headings: one family (Montserrat), one weight, one rhythm everywhere.
+   The accent word keeps the same font and size and only changes colour,
+   a starlight silver fill, so every title reads even. */
+h1, h2 {
+  font-family: var(--font-display);
+}
+.heading-accent,
 section h2 > span.gold-glow {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 500;
-  letter-spacing: 0;
-  color: #ffffff;
-  padding: 0 0.08em;
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  background: linear-gradient(180deg, #ffffff 0%, #dfe4ee 50%, #8f97a8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  padding: 0;
+}
+
+/* ------------------------------------------------------------------
+ * Gyroscope depth (phones only). GyroDepth.jsx adds .gyro-on to <html>
+ * once tilt data arrives and keeps these variables updated:
+ *   --gx, --gy  tilt from -1 to 1    --gm  how far from rest, 0 to 1
+ * Every card and panel turns like a held card, a soft glare slides across
+ * it, and the page content floats against the star background.
+ * ------------------------------------------------------------------ */
+:root {
+  --gx: 0;
+  --gy: 0;
+  --gm: 0;
+}
+
+@media (hover: none) {
+  .gyro-on main {
+    position: relative;
+    left: calc(var(--gx) * -7px);
+    top: calc(var(--gy) * -7px);
+  }
+
+  .gyro-on .glass-card,
+  .gyro-on .glass-card-cyan,
+  .gyro-on .glass-panel,
+  .gyro-on [data-tilt] {
+    transform:
+      perspective(1100px)
+      rotateX(calc(var(--gy) * -9deg))
+      rotateY(calc(var(--gx) * 9deg))
+      translateZ(calc(var(--gm) * 14px)) !important;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease !important;
+    will-change: transform;
+  }
+
+  .gyro-on .glass-card,
+  .gyro-on .glass-card-cyan,
+  .gyro-on .glass-panel {
+    background-image:
+      radial-gradient(
+        circle at calc(50% - var(--gx) * 45%) calc(35% - var(--gy) * 45%),
+        rgba(235, 240, 255, calc(0.03 + var(--gm) * 0.09)),
+        transparent 60%
+      ),
+      linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 45%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      calc(var(--gx) * -14px) calc(18px - var(--gy) * 14px) 40px -22px rgba(0, 0, 0, 0.85);
+  }
+}
+
+@media (hover: none) {
+  /* a card that is showing a full-screen overlay stays flat, so the overlay still covers the screen */
+  .gyro-on .glass-card:has(.fixed),
+  .gyro-on .glass-card-cyan:has(.fixed),
+  .gyro-on .glass-panel:has(.fixed),
+  .gyro-on [data-tilt]:has(.fixed) {
+    transform: none !important;
+  }
+}
+
+@media (hover: none) and (prefers-reduced-motion: reduce) {
+  .gyro-on main { left: 0; top: 0; }
+  .gyro-on .glass-card,
+  .gyro-on .glass-card-cyan,
+  .gyro-on .glass-panel,
+  .gyro-on [data-tilt] { transform: none !important; }
+}
+
+/* Notice bar ticker: two copies of the strip slide left in a seamless loop */
+.notice-marquee {
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+}
+.notice-track {
+  animation: notice-slide linear infinite;
+}
+.notice-marquee:hover .notice-track,
+.notice-marquee:active .notice-track {
+  animation-play-state: paused;
+}
+@keyframes notice-slide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .notice-track { animation-duration: 120s !important; }
+}
+
+/* Hero wordmark and tagline: original typography preserved */
+.hero-wordmark {
+  font-family: var(--font-wordmark);
 }
